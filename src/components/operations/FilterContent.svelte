@@ -13,6 +13,8 @@
     // console.log(value)
   }
 
+  console.log(conditions)
+
   function togglePopOver() {
     if (showPopOver) {
       showPopOver = false
