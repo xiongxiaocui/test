@@ -1,26 +1,37 @@
 <script>
 import { createPopper } from '@popperjs/core/';
 import { onMount } from 'svelte'
-// export let curElem
 export let width = ""
-export let popId = ""
 export let height = "auto"
 
 let popoverRef
-
+let btnRef
+const handlePopover = (e) => {
+  const target = e.target
+  const btnElemHtml = String(btnRef.innerHTML)
+  // console.log(btnElemHtml)
+  const popOverElemHtml = String(popoverRef.innerHTML)
+  const targetHtml = String(target.innerHTML)
+  console.log(btnElemHtml)
+  console.log(targetHtml,'target')
+  console.log(btnElemHtml.indexOf(targetHtml)>=0)
+  // if(target)
+}
 onMount(() => {
-	const curElem = document.getElementById(popId)
-	if (curElem) {
-		createPopper(curElem, popoverRef, {
+	// const curElem = document.getElementById(popId)
+  // const curElem = btnRef
+		createPopper(btnRef, popoverRef, {
 			placement: 'bottom'
 		})
-	}
 })
 </script>
+<svelte:body on:click={handlePopover}/>
+<span bind:this={btnRef}>
+  <slot name="button"></slot>
+</span>
 <div style="width:{width};height: {height}" role='tooltip' bind:this={popoverRef} class="popoverWrapper">
 	<slot name="content"></slot>
 </div>
-
 <style>
 	.popoverWrapper {
     position:absolute;

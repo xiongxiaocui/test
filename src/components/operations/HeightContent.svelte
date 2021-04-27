@@ -9,7 +9,6 @@
 
   let btnRef: HTMLButtonElement
   let showPopOver: Boolean
-  let popOverId: String
   let search: String
   let searchAlgrom: String
   let optionIndex: Number
@@ -29,7 +28,6 @@
       showPopOver = false
     } else {
       showPopOver = true
-      popOverId = btnRef && btnRef.id
     }
   }
   const searchHandler = e => {
@@ -128,65 +126,71 @@
     return curTitle.startsWith(curSearch)
   })
 </script>
-<button
-    bind:this={btnRef}
-    id="filterOperation"
-    type="button"
-    on:click="{togglePopOver}"
-    class="btn"><span
-      class="btn-icon">
-      <svg
-        viewBox="0 0 16 16"
-        width="16"
-        height="16"
-        fill="#636363"
-        class=""><path
-          d="M5.9 5.8c.2.2.5.3.7.3s.5-.1.7-.3c.4-.4.4-1 0-1.4L5.2 2.3c-.4-.4-1-.4-1.4 0L1.7 4.4c-.4.4-.4 1 0 1.4s1 .4 1.4 0l.4-.4v5.2l-.4-.4c-.4-.4-1-.4-1.4 0s-.4 1 0 1.4l2.1 2.1c.2.2.4.3.7.3s.5-.1.7-.3l2.1-2.1c.4-.4.4-1 0-1.4s-1-.4-1.4 0l-.4.4V5.4l.4.4zM10 5h4c.6 0 1-.4 1-1s-.4-1-1-1h-4c-.6 0-1 .4-1 1s.4 1 1 1zm4 2h-4c-.6 0-1 .4-1 1s.4 1 1 1h4c.6 0 1-.4 1-1s-.4-1-1-1zm0 4h-4c-.6 0-1 .4-1 1s.4 1 1 1h4c.6 0 1-.4 1-1s-.4-1-1-1z" /></svg>
-    </span><span>行高</span></button>
-{#if showPopOver}
-  <PopOver popId={popOverId} width={"600px"}>
-    <div class="viewFilter" slot="content">
-      {#each $conditions as condition,i (i)}
-        <div class="condition">
-          <div class="conditionItem">
-          <div class="junction" style="padding-left: 10px;">
-            当
-          </div>
-          <div class='field' style="width: max-content;">
-            <SingleSelect options={filterOptions} on:search="{searchHandler}" on:selected="{handleSelectedKey}" width={"128px"} showFirst></SingleSelect>
-          </div>
-          <div style="width: max-content;margin-right:10px;">
-            <SingleSelect options={filterSearchOptions} on:search="{searchAlgromHandler}" on:selected="{handleSelectedAlgrom}" on:addParams="{handleSelectedIndex.bind(this, i)}" width={"128px"} showFirst></SingleSelect>
-          </div>
-          {#if condition.showInput}
-            <div class="filterValue">
-              <div class="inputContainer">
-                <Input onChange={changeInputHandler.bind(this, condition)} height="100%" />
+  <PopOver width={"600px"}>
+    <button
+      slot="button"
+      id="filterOperation"
+      type="button"
+      on:click="{togglePopOver}"
+      class="btn"><span
+        class="btn-icon">
+        <svg
+          viewBox="0 0 16 16"
+          width="16"
+          height="16"
+          fill="#636363"
+          class=""><path
+            d="M5.9 5.8c.2.2.5.3.7.3s.5-.1.7-.3c.4-.4.4-1 0-1.4L5.2 2.3c-.4-.4-1-.4-1.4 0L1.7 4.4c-.4.4-.4 1 0 1.4s1 .4 1.4 0l.4-.4v5.2l-.4-.4c-.4-.4-1-.4-1.4 0s-.4 1 0 1.4l2.1 2.1c.2.2.4.3.7.3s.5-.1.7-.3l2.1-2.1c.4-.4.4-1 0-1.4s-1-.4-1.4 0l-.4.4V5.4l.4.4zM10 5h4c.6 0 1-.4 1-1s-.4-1-1-1h-4c-.6 0-1 .4-1 1s.4 1 1 1zm4 2h-4c-.6 0-1 .4-1 1s.4 1 1 1h4c.6 0 1-.4 1-1s-.4-1-1-1zm0 4h-4c-.6 0-1 .4-1 1s.4 1 1 1h4c.6 0 1-.4 1-1s-.4-1-1-1z" /></svg>
+      </span><span>行高</span></button>
+      <div slot="content">
+        {#if showPopOver}
+        <div class="viewFilter" >
+            {#each $conditions as condition,i (i)}
+            <div class="condition">
+              <div class="conditionItem">
+              <div class="junction" style="padding-left: 10px;">
+                当
               </div>
-            </div><!-- content here -->
-          {/if}
-          <button on:click="{handleDeleteItem.bind(this, condition)}" type="button" class="btn" style="color: rgb(201, 201, 201);">
-            <span class="btn-icon">
-              <svg viewbox="0 0 16 16" width="15" height="15" fill="#C9C9C9">
-                <path d="M14 4h-3V3c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v1H2c-.6 0-1 .4-1 1s.4 1 1 1h1v6c0 1.7 1.3 3 3 3h4c1.7 0 3-1.3 3-3V6h1c.6 0 1-.4 1-1s-.4-1-1-1zM7 3h2v1H7V3zm4 9c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1V6h6v6z"></path>
+              <div class='field' style="width: max-content;">
+                <SingleSelect options={filterOptions} on:search="{searchHandler}" on:selected="{handleSelectedKey}" width={"128px"} showFirst></SingleSelect>
+              </div>
+              <div style="width: max-content;margin-right:10px;">
+                <SingleSelect options={filterSearchOptions} on:search="{searchAlgromHandler}" on:selected="{handleSelectedAlgrom}" on:addParams="{handleSelectedIndex.bind(this, i)}" width={"128px"} showFirst></SingleSelect>
+              </div>
+              {#if condition.showInput}
+                <div class="filterValue">
+                  <div class="inputContainer">
+                    <Input onChange={changeInputHandler.bind(this, condition)} height="100%" />
+                  </div>
+                </div><!-- content here -->
+              {/if}
+              <button on:click="{handleDeleteItem.bind(this, condition)}" type="button" class="btn" style="color: rgb(201, 201, 201);">
+                <span class="btn-icon">
+                  <svg viewbox="0 0 16 16" width="15" height="15" fill="#C9C9C9">
+                    <path d="M14 4h-3V3c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v1H2c-.6 0-1 .4-1 1s.4 1 1 1h1v6c0 1.7 1.3 3 3 3h4c1.7 0 3-1.3 3-3V6h1c.6 0 1-.4 1-1s-.4-1-1-1zM7 3h2v1H7V3zm4 9c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1V6h6v6z"></path>
+                  </svg>
+                </span></button>
+              </div>
+            </div>
+            {/each}
+            <div class="addNewButton" on:click='{handleAddNewCondition}'>
+              <div class="iconAdd">
+              <svg viewbox="0 0 16 16" width="16" height="16" fill="#8C8C8C">
+                <path d="M12.3 7.2H8.8V3.6c0-.4-.3-.8-.8-.8s-.8.4-.8.8v3.6H3.5c-.4 0-.8.4-.8.8s.3.8.8.8h3.8v3.7c0 .4.3.8.8.8s.8-.3.8-.8V8.8h3.5c.3 0 .6-.4.6-.8s-.3-.8-.7-.8z"></path>
               </svg>
-            </span></button>
-          </div>
-        </div>
-      {/each}
-      <div class="addNewButton" on:click='{handleAddNewCondition}'>
-        <div class="iconAdd">
-        <svg viewbox="0 0 16 16" width="16" height="16" fill="#8C8C8C">
-          <path d="M12.3 7.2H8.8V3.6c0-.4-.3-.8-.8-.8s-.8.4-.8.8v3.6H3.5c-.4 0-.8.4-.8.8s.3.8.8.8h3.8v3.7c0 .4.3.8.8.8s.8-.3.8-.8V8.8h3.5c.3 0 .6-.4.6-.8s-.3-.8-.7-.8z"></path>
-        </svg>
-        </div>添加筛选条件
-      </div>
-      </div>
+              </div>添加筛选条件
+            </div>
+            </div>
+        {/if}
+    </div>
 </PopOver>
-{/if}
 
 <style>
-
+.condition {
+  padding-top: 2px;
+  max-height: 500px;
+  overflow-y: auto;
+}
 .viewFilter {
   width: 600px;
   padding: 24px;
@@ -198,11 +202,6 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-.condition {
-  padding-top: 2px;
-  max-height: 500px;
-  overflow-y: auto;
 }
 .addNewButton {
   display: flex;
