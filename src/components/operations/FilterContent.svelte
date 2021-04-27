@@ -9,11 +9,11 @@
   let showPopOver: Boolean
   let popOverId: String
   let search: String
+  let searchAlgrom: String
+  let optionIndex: Number
   const changeInputHandler = (value) => {
     // console.log(value)
   }
-
-  console.log(conditions)
 
   function togglePopOver() {
     if (showPopOver) {
@@ -25,23 +25,53 @@
   }
   const searchHandler = e => {
     search = e.detail.value
-    console.log(search)
   }
-  const searchEqHandler = e => {
-    console.log(e)
+  
+  const searchAlgromHandler = e => {
+    searchAlgrom = e.detail.value
   }
   // todo: 选中头部的后续操作
   const handleSelectedKey = e => {
-    console.log(e)
+    // console.log(e)
   }
   // todo: 选中算法之后的后续操作
   const handleSelectedAlgrom = e =>{
-    console.log(e)
+    const { detail } = e
+    const { algorithm } = detail
+    if (algorithm.indexOf("empty") >= 0) {
+      const option = $conditions[+optionIndex]
+      const { id } = option
+      const newCondition = {...option, showInput: false}
+      conditions.updateCondition(id, newCondition)
+    } else {
+      const option = $conditions[+optionIndex]
+      const { id } = option
+      const newCondition = {...option, showInput: true}
+      conditions.updateCondition(id, newCondition)
+    }
   }
 
+  // todo: 获取选择的options的index
+  const handleSelectedIndex = (i) => {
+    optionIndex = i
+  }
 
   // todo 增加筛选条件
-  const handleAddNewCondition = () => {}
+  const handleAddNewCondition = () => {
+    const length = $conditions.length || 0
+    const item = {
+      id: length,
+      showInput: true
+    }
+    conditions.addConditions(item)
+  }
+
+  // todo 删除筛选条件
+  const handleDeleteItem = (item) => {
+    const { id } = item
+    conditions.removeCondition(id)
+  }
+
 
   const searchOptions = [{
     title: '等于',
@@ -67,12 +97,19 @@
     const curTitle = item && item.title && item.title.toLowerCase()
     const curSearch = search && search.toLowerCase()
     if (!curSearch) {
-      const {title} = item
       return {...headings}
     }
     return curTitle.startsWith(curSearch)
   })
 
+  $:filterSearchOptions = searchOptions.filter(item => {
+    const curTitle = item && item.title && item.title.toLowerCase()
+    const curSearch = searchAlgrom && searchAlgrom.toLowerCase()
+    if (!curSearch) {
+      return {...searchOptions}
+    }
+    return curTitle.startsWith(curSearch)
+  })
 </script>
 <button
     bind:this={btnRef}
@@ -90,7 +127,7 @@
 {#if showPopOver}
   <PopOver popId={popOverId} width={"600px"}>
     <div class="viewFilter" slot="content">
-      {#each conditions as condition,i (i)}
+      {#each $conditions as condition,i (i)}
         <div class="condition">
           <div class="conditionItem">
           <div class="junction" style="padding-left: 10px;">
@@ -100,17 +137,21 @@
             <SingleSelect options={filterOptions} on:search="{searchHandler}" on:selected="{handleSelectedKey}" width={"128px"} showFirst></SingleSelect>
           </div>
           <div style="width: max-content;margin-right:10px;">
-            <SingleSelect options={searchOptions} on:search="{searchHandler}" on:selected="{handleSelectedAlgrom}" width={"128px"} showFirst></SingleSelect>
+            <SingleSelect options={filterSearchOptions} on:search="{searchAlgromHandler}" on:selected="{handleSelectedAlgrom}" on:addParams="{handleSelectedIndex.bind(this, i)}" width={"128px"} showFirst></SingleSelect>
           </div>
-          <div class="filterValue">
-            <div class="inputContainer">
-              <Input onChange={changeInputHandler} height="100%" />
-            </div>
-          </div>
-          <button type="button" class="btn btn-icon-only btn-x-small btn-circle btn-plus-icon" style="color: rgb(201, 201, 201);"><span class="btn-icon">
-            <svg viewbox="0 0 16 16" width="15" height="15" fill="#C9C9C9">
-              <path d="M14 4h-3V3c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v1H2c-.6 0-1 .4-1 1s.4 1 1 1h1v6c0 1.7 1.3 3 3 3h4c1.7 0 3-1.3 3-3V6h1c.6 0 1-.4 1-1s-.4-1-1-1zM7 3h2v1H7V3zm4 9c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1V6h6v6z"></path>
-            </svg></span><span></span></button>
+          {#if condition.showInput}
+            <div class="filterValue">
+              <div class="inputContainer">
+                <Input onChange={changeInputHandler} height="100%" />
+              </div>
+            </div><!-- content here -->
+          {/if}
+          <button on:click="{handleDeleteItem.bind(this, condition)}" type="button" class="btn" style="color: rgb(201, 201, 201);">
+            <span class="btn-icon">
+              <svg viewbox="0 0 16 16" width="15" height="15" fill="#C9C9C9">
+                <path d="M14 4h-3V3c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v1H2c-.6 0-1 .4-1 1s.4 1 1 1h1v6c0 1.7 1.3 3 3 3h4c1.7 0 3-1.3 3-3V6h1c.6 0 1-.4 1-1s-.4-1-1-1zM7 3h2v1H7V3zm4 9c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1V6h6v6z"></path>
+              </svg>
+            </span></button>
           </div>
         </div>
       {/each}

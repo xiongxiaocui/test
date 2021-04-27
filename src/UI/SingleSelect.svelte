@@ -33,6 +33,7 @@
 		const selectedTitle = option && option.title
 		selectedText = selectedTitle
 		await tick().then(() => {
+			dispatch("addParams")
 			dispatch("selected", {...option, selected: selectedText})
 			dispatchDebounce("search", {
 				value: ''
