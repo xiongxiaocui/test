@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Input from './../../UI/TextInput.svelte'
-  import PopOver from './../../UI/PopOver.svelte';
-  import SingleSelect from './../../UI/SingleSelect.svelte'
+  import Input from '../../UI/TextInput.svelte'
+  import PopOver from '../../UI/PopOver.svelte';
+  import SingleSelect from '../../UI/SingleSelect.svelte'
   import conditions from './condition-store'
   import {createEventDispatcher} from 'svelte'
   const dispatch = createEventDispatcher()
@@ -134,13 +134,15 @@
     type="button"
     on:click="{togglePopOver}"
     class="btn"><span
-      class="btn-icon"><svg
+      class="btn-icon">
+      <svg
         viewBox="0 0 16 16"
         width="16"
         height="16"
         fill="#636363"
         class=""><path
-          d="M12.7 3H3.3C2.4 3 2 4 2.6 4.7L6.5 9c.2.2.3.4.3.7v3.1c0 .2.1.3.2.4l1.5 1.1c.3.2.8 0 .8-.4V9.6c0-.3.1-.5.3-.7l3.9-4.3c.5-.6.1-1.6-.8-1.6z" /></svg></span><span>筛选</span></button>
+          d="M5.9 5.8c.2.2.5.3.7.3s.5-.1.7-.3c.4-.4.4-1 0-1.4L5.2 2.3c-.4-.4-1-.4-1.4 0L1.7 4.4c-.4.4-.4 1 0 1.4s1 .4 1.4 0l.4-.4v5.2l-.4-.4c-.4-.4-1-.4-1.4 0s-.4 1 0 1.4l2.1 2.1c.2.2.4.3.7.3s.5-.1.7-.3l2.1-2.1c.4-.4.4-1 0-1.4s-1-.4-1.4 0l-.4.4V5.4l.4.4zM10 5h4c.6 0 1-.4 1-1s-.4-1-1-1h-4c-.6 0-1 .4-1 1s.4 1 1 1zm4 2h-4c-.6 0-1 .4-1 1s.4 1 1 1h4c.6 0 1-.4 1-1s-.4-1-1-1zm0 4h-4c-.6 0-1 .4-1 1s.4 1 1 1h4c.6 0 1-.4 1-1s-.4-1-1-1z" /></svg>
+    </span><span>行高</span></button>
 {#if showPopOver}
   <PopOver popId={popOverId} width={"600px"}>
     <div class="viewFilter" slot="content">

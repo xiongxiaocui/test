@@ -134,13 +134,15 @@
     type="button"
     on:click="{togglePopOver}"
     class="btn"><span
-      class="btn-icon"><svg
-        viewBox="0 0 16 16"
-        width="16"
-        height="16"
-        fill="#636363"
-        class=""><path
-          d="M12.7 3H3.3C2.4 3 2 4 2.6 4.7L6.5 9c.2.2.3.4.3.7v3.1c0 .2.1.3.2.4l1.5 1.1c.3.2.8 0 .8-.4V9.6c0-.3.1-.5.3-.7l3.9-4.3c.5-.6.1-1.6-.8-1.6z" /></svg></span><span>筛选</span></button>
+      class="btn-icon">
+      <svg
+          viewBox="0 0 16 16"
+          width="16"
+          height="16"
+          class=""
+          fill="#636363"><path
+            d="M11 3H5c-1.1 0-2 .9-2 2v1h10V5c0-1.1-.9-2-2-2zm.5 4h-7C3.7 7 3 7.7 3 8.5S3.7 10 4.5 10h7c.8 0 1.5-.7 1.5-1.5S12.3 7 11.5 7zM3 12c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-1H3v1z" /></svg>
+    </span><span>分组</span></button>
 {#if showPopOver}
   <PopOver popId={popOverId} width={"600px"}>
     <div class="viewFilter" slot="content">

@@ -3,9 +3,12 @@
   import Modal from './components/modal/Modal.svelte';
   import AddContent from './components/operations/AddContent.svelte'
   import HideContent from './components/operations/HideContent.svelte'
-  import HeaderOperation from './components/header/popup.svelte'
+  // import HeaderOperation from './components/header/popup.svelte'
   import SearchOperation from './components/operations/SearchContent.svelte'
   import FilterOperation from './components/operations/FilterContent.svelte'
+  import GroupOperation from './components/operations/GroupContent.svelte'
+  import RankOperation from './components/operations/RankContent.svelte'
+  import HeightOperation from './components/operations/HeightContent.svelte'
   export let data: ScoutField[];
   export let headings: Heading[];
   export let title: string;
@@ -13,8 +16,10 @@
   let editIndex: number;
   let editProperty: string;
   let table: HTMLTableElement;
-  let headerPopref: HTMLDivElement
+  // let headerPopref: HTMLDivElement
   let filteredData
+
+  let filterSearchStr
 
   function deleteRow(index: number): void {
     data.splice(index, 1);
@@ -70,10 +75,37 @@
   }
 
   // 获取变化的数据
-  const handleSearchData = (data, key) => {
+  const handleSearchData = (data) => {
     filteredData = data
-    // search = key
   }
+
+  // 筛选变化的数据
+  const handleFilter = (e) => {
+    // console.log(obj)
+    const {detail} = e
+    console.log(detail)
+    filterSearchStr = detail.value
+    filteredData = data.filter((o, oi) => {
+      const values = Object.values(o).map(item => String(item).toLowerCase())
+      const searchIgnore = filterSearchStr && filterSearchStr.toLocaleLowerCase()
+      if (filterSearchStr === '') {
+        return true
+      }
+      const result = values.filter((item, ii) =>{
+        if (item.includes(searchIgnore)) {
+          return true
+        }
+        return false
+      })
+      if (result.length >0) {
+        return o
+      }
+      return false
+    })
+    // console.log(filterSearchStr)
+    // console.log(option, "-----")
+  }
+
 </script>
 
 <section>
@@ -84,31 +116,14 @@
       <AddContent on:addRow={addRow} bind:headings={headings}></AddContent>
     </Modal>
       <HideContent bind:headings={headings}></HideContent>
-      <FilterOperation  bind:headings={headings}></FilterOperation>
-    <button
-      type="button"
-      class="btn"><span
-        class="btn-icon"><svg
-          viewBox="0 0 16 16"
-          width="16"
-          height="16"
-          class=""
-          fill="#636363"><path
-            d="M11 3H5c-1.1 0-2 .9-2 2v1h10V5c0-1.1-.9-2-2-2zm.5 4h-7C3.7 7 3 7.7 3 8.5S3.7 10 4.5 10h7c.8 0 1.5-.7 1.5-1.5S12.3 7 11.5 7zM3 12c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-1H3v1z" /></svg></span><span>分组</span></button>
-    <button
-      type="button"
-      class="btn"><span
-        class="btn-icon"><svg
-          viewBox="0 0 1024 1024"
-          width="16"
-          height="16"
-          fill="#636363"
-          class=""><path
-            d="M426.5 153.4c-1.2-1.3-2.4-2.5-3.7-3.7-14.4-13.5-33.6-21.7-54.8-21.7-10.8 0-21 2.1-30.4 6-9.5 3.9-18.4 9.7-26.2 17.5L108 354.9c-31.2 31.2-31.2 81.9 0 113.1 31.2 31.2 81.9 31.2 113.1 0l66.9-66.9V816c0 44.2 35.8 80 80 80s80-35.8 80-80V208c0-11.2-2.3-21.8-6.4-31.5-3.6-8.3-8.6-16.2-15.1-23.1zM916 556c-31.2-31.2-81.9-31.2-113.1 0L736 622.9V208c0-44.2-35.8-80-80-80s-80 35.8-80 80v608c0 21.1 8.2 40.3 21.5 54.6 1.2 1.3 2.5 2.6 3.9 3.9 6.9 6.5 14.8 11.5 23.1 15.1 9.7 4.2 20.3 6.5 31.5 6.5s21.9-2.3 31.5-6.5c8.3-3.6 16.1-8.6 23.1-15.1.7-.7 1.5-1.4 2.2-2.1L916 669.1c31.2-31.2 31.2-81.9 0-113.1z" /></svg></span><span>排序</span></button>
+      <FilterOperation  bind:headings={headings} on:filter-table="{handleFilter}"></FilterOperation>
+      <GroupOperation  bind:headings={headings} on:filter-table="{handleFilter}"></GroupOperation>
+      <RankOperation  bind:headings={headings} on:filter-table="{handleFilter}"></RankOperation>
+      <HeightOperation  bind:headings={headings} on:filter-table="{handleFilter}"></HeightOperation>
       <SearchOperation data={data} onChange="{handleSearchData}"></SearchOperation>
   </div>
   <!-- 操作按钮结束 -->
-  <table id="table" bind:this={table} class="display nowrap" style="width:100%">
+  <table id="table" bind:this={table} class="display nowrap">
     <thead>
       <tr>
         {#each headings as heading}
