@@ -6,17 +6,7 @@ export let height = "auto"
 
 let popoverRef
 let btnRef
-const handlePopover = (e) => {
-  const target = e.target
-  const btnElemHtml = String(btnRef.innerHTML)
-  // console.log(btnElemHtml)
-  const popOverElemHtml = String(popoverRef.innerHTML)
-  const targetHtml = String(target.innerHTML)
-  console.log(btnElemHtml)
-  console.log(targetHtml,'target')
-  console.log(btnElemHtml.indexOf(targetHtml)>=0)
-  // if(target)
-}
+
 onMount(() => {
 	// const curElem = document.getElementById(popId)
   // const curElem = btnRef
@@ -25,7 +15,7 @@ onMount(() => {
 		})
 })
 </script>
-<svelte:body on:click={handlePopover}/>
+<svelte:body/>
 <span bind:this={btnRef}>
   <slot name="button"></slot>
 </span>

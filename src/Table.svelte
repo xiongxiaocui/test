@@ -21,6 +21,15 @@
 
   let filterSearchStr
 
+  let styles = {
+		'row-height': '42px'
+	};
+
+	$: cssVarStyles = Object.entries(styles)
+		.map(([key, value]) => `--${key}:${value}`)
+		.join(';');
+
+
   function deleteRow(index: number): void {
     data.splice(index, 1);
     data = data;
@@ -106,9 +115,23 @@
     // console.log(option, "-----")
   }
 
+// 修改杭高
+const handleHeight = e => {
+  // console.log(val)
+  const {detail} = e
+  console.log(detail)
+  const heightMap = {
+    default: "42px",
+    medium: '60px',
+    high: '80px',
+    highest: '120px'
+  }
+  styles['row-height'] = heightMap[detail]
+
+}
 </script>
 
-<section>
+<section style="{cssVarStyles}">
   <h1>{title}</h1>
   <!-- 操作按钮开始 -->
   <div class="actions">
@@ -119,7 +142,7 @@
       <FilterOperation  bind:headings={headings} on:filter-table="{handleFilter}"></FilterOperation>
       <GroupOperation  bind:headings={headings} on:filter-table="{handleFilter}"></GroupOperation>
       <RankOperation  bind:headings={headings} on:filter-table="{handleFilter}"></RankOperation>
-      <HeightOperation  bind:headings={headings} on:filter-table="{handleFilter}"></HeightOperation>
+      <HeightOperation  bind:headings={headings} on:changeHeight="{handleHeight}"></HeightOperation>
       <SearchOperation data={data} onChange="{handleSearchData}"></SearchOperation>
   </div>
   <!-- 操作按钮结束 -->
@@ -182,16 +205,12 @@
     border: none;
     cursor: pointer;
     margin-bottom: 0;
-    padding: 0 6px;
+
   }
 
   input,
   select {
     margin-bottom: 0;
-  }
-
-  section {
-    --row-height: 52px;
   }
 
   section :global(.clone-table),
@@ -220,7 +239,7 @@
   section :global(td),
   section :global(th) {
     border: 1px solid lightgray;
-    padding: 0.5rem;
+    padding: 0 10px !important;
   }
 
   section :global(.clone-list td) {
@@ -237,12 +256,6 @@
   .actions {
     background-color: #f2f4f6;
     padding: 10px;
-  }
-  .hidden {
-    display: none!important;
-  }
-  .block{
-    display:block;
   }
 
 </style>
