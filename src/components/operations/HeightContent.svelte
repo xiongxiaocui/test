@@ -18,7 +18,7 @@
 
     }
   }
-  $:setActive =(() => {
+  $:(() => {
     if (active) {
       dispatch('changeHeight', active)
     }

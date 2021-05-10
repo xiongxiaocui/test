@@ -1,247 +1,153 @@
 <script lang="ts">
-  import Input from './../../UI/TextInput.svelte'
-  import PopOver from './../../UI/PopOver.svelte';
-  import SingleSelect from './../../UI/SingleSelect.svelte'
-  import conditions from './condition-store'
-  import {createEventDispatcher} from 'svelte'
+	import Button from './../../UI/Button.svelte';
+  import clickOutside from './../../clickOutside'
+  import {
+    createPopper
+  } from '@popperjs/core/';
+  import {
+    tick,
+    createEventDispatcher
+  } from 'svelte'
   const dispatch = createEventDispatcher()
-  export let headings
-
+  let open = false
   let btnRef: HTMLButtonElement
-  let showPopOver: Boolean
-  let popOverId: String
-  let search: String
-  let searchAlgrom: String
-  let optionIndex: Number
-  let changedProperty
-  let changedValue
-  const changeInputHandler = (option, value) => {
-    changedValue = value
-    dispatch('filter-table', {
-      value: value,
-      option: option,
-      key: changedProperty
-    })
-  }
+  let popoverRef: HTMLDivElement
+  let active = "default"
+  const toggleShow = async () => {
+    open = !open
+    if (open) {
+      await tick().then(() => {
+        createPopper(btnRef, popoverRef, {
+          placement: 'bottom'
+        })
+      })
 
-  function togglePopOver() {
-    if (showPopOver) {
-      showPopOver = false
-    } else {
-      showPopOver = true
-      popOverId = btnRef && btnRef.id
     }
   }
-  const searchHandler = e => {
-    search = e.detail.value
-  }
-  
-  const searchAlgromHandler = e => {
-    searchAlgrom = e.detail.value
-  }
-  // todo: 选中头部的后续操作
-  const handleSelectedKey = e => {
-    const { detail } = e
-    const {property} = detail
-    changedProperty = property
-    dispatch('filter-table', {
-      value: changedValue,
-      key: changedProperty
-    })
-  }
-  // todo: 选中算法之后的后续操作
-  const handleSelectedAlgrom = e =>{
-    const { detail } = e
-    const { algorithm } = detail
-    if (algorithm.indexOf("empty") >= 0) {
-      const option = $conditions[+optionIndex]
-      const { id } = option
-      const newCondition = {...option, showInput: false}
-      conditions.updateCondition(id, newCondition)
-    } else {
-      const option = $conditions[+optionIndex]
-      const { id } = option
-      const newCondition = {...option, showInput: true}
-      conditions.updateCondition(id, newCondition)
+  $: (() => {
+    if (active) {
+      dispatch('changeHeight', active)
     }
-  }
-
-  // todo: 获取选择的options的index
-  const handleSelectedIndex = (i) => {
-    optionIndex = i
-  }
-
-  // todo 增加筛选条件
-  const handleAddNewCondition = () => {
-    const length = $conditions.length || 0
-    const item = {
-      id: length,
-      showInput: true,
-      key: "",
-      algrom: ''
-    }
-    conditions.addConditions(item)
-  }
-
-  // todo 删除筛选条件
-  const handleDeleteItem = (item) => {
-    const { id } = item
-    conditions.removeCondition(id)
-  }
-
-
-  const searchOptions = [{
-    title: '等于',
-    algorithm: '='
-  }, {
-    title: '不等于',
-    algorithm: '!='
-  }, {
-    title: '包含',
-    algorithm: 'contains'
-  }, {
-    title: '不包含',
-    algorithm: '!contains'
-  }, {
-    title: '为空',
-    algorithm: 'empty'
-  }, {
-    title: '不为空',
-    algorithm: '!empty'
-  }]
-
-  $:filterOptions = headings.filter(item => {
-    const curTitle = item && item.title && item.title.toLowerCase()
-    const curSearch = search && search.toLowerCase()
-    if (!curSearch) {
-      return {...headings}
-    }
-    return curTitle.startsWith(curSearch)
-  })
-
-  $:filterSearchOptions = searchOptions.filter(item => {
-    const curTitle = item && item.title && item.title.toLowerCase()
-    const curSearch = searchAlgrom && searchAlgrom.toLowerCase()
-    if (!curSearch) {
-      return {...searchOptions}
-    }
-    return curTitle.startsWith(curSearch)
-  })
+  })()
 </script>
-<button
-    bind:this={btnRef}
-    id="filterOperation"
-    type="button"
-    on:click="{togglePopOver}"
-    class="btn"><span
-      class="btn-icon">
-      <svg
-          viewBox="0 0 1024 1024"
-          width="16"
-          height="16"
-          fill="#636363"
-          class=""><path
-            d="M426.5 153.4c-1.2-1.3-2.4-2.5-3.7-3.7-14.4-13.5-33.6-21.7-54.8-21.7-10.8 0-21 2.1-30.4 6-9.5 3.9-18.4 9.7-26.2 17.5L108 354.9c-31.2 31.2-31.2 81.9 0 113.1 31.2 31.2 81.9 31.2 113.1 0l66.9-66.9V816c0 44.2 35.8 80 80 80s80-35.8 80-80V208c0-11.2-2.3-21.8-6.4-31.5-3.6-8.3-8.6-16.2-15.1-23.1zM916 556c-31.2-31.2-81.9-31.2-113.1 0L736 622.9V208c0-44.2-35.8-80-80-80s-80 35.8-80 80v608c0 21.1 8.2 40.3 21.5 54.6 1.2 1.3 2.5 2.6 3.9 3.9 6.9 6.5 14.8 11.5 23.1 15.1 9.7 4.2 20.3 6.5 31.5 6.5s21.9-2.3 31.5-6.5c8.3-3.6 16.1-8.6 23.1-15.1.7-.7 1.5-1.4 2.2-2.1L916 669.1c31.2-31.2 31.2-81.9 0-113.1z" /></svg>
-    </span><span>排序</span></button>
-{#if showPopOver}
-  <PopOver popId={popOverId} width={"600px"}>
-    <div class="viewFilter" slot="content">
-      {#each $conditions as condition,i (i)}
-        <div class="condition">
-          <div class="conditionItem">
-          <div class="junction" style="padding-left: 10px;">
-            当
-          </div>
-          <div class='field' style="width: max-content;">
-            <SingleSelect options={filterOptions} on:search="{searchHandler}" on:selected="{handleSelectedKey}" width={"128px"} showFirst></SingleSelect>
-          </div>
-          <div style="width: max-content;margin-right:10px;">
-            <SingleSelect options={filterSearchOptions} on:search="{searchAlgromHandler}" on:selected="{handleSelectedAlgrom}" on:addParams="{handleSelectedIndex.bind(this, i)}" width={"128px"} showFirst></SingleSelect>
-          </div>
-          {#if condition.showInput}
-            <div class="filterValue">
-              <div class="inputContainer">
-                <Input onChange={changeInputHandler.bind(this, condition)} height="100%" />
-              </div>
-            </div><!-- content here -->
-          {/if}
-          <button on:click="{handleDeleteItem.bind(this, condition)}" type="button" class="btn" style="color: rgb(201, 201, 201);">
-            <span class="btn-icon">
-              <svg viewbox="0 0 16 16" width="15" height="15" fill="#C9C9C9">
-                <path d="M14 4h-3V3c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v1H2c-.6 0-1 .4-1 1s.4 1 1 1h1v6c0 1.7 1.3 3 3 3h4c1.7 0 3-1.3 3-3V6h1c.6 0 1-.4 1-1s-.4-1-1-1zM7 3h2v1H7V3zm4 9c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1V6h6v6z"></path>
-              </svg>
-            </span></button>
+<span class='btn-wrapper' use:clickOutside={{ enabled: open, cb: () => open = false }}>
+  <button bind:this={btnRef} type="button" on:click="{toggleShow}">
+    <span class="btn-icon">
+      <svg viewBox="0 0 1024 1024" width="16" height="16" fill="#636363" class="">
+        <path
+          d="M426.5 153.4c-1.2-1.3-2.4-2.5-3.7-3.7-14.4-13.5-33.6-21.7-54.8-21.7-10.8 0-21 2.1-30.4 6-9.5 3.9-18.4 9.7-26.2 17.5L108 354.9c-31.2 31.2-31.2 81.9 0 113.1 31.2 31.2 81.9 31.2 113.1 0l66.9-66.9V816c0 44.2 35.8 80 80 80s80-35.8 80-80V208c0-11.2-2.3-21.8-6.4-31.5-3.6-8.3-8.6-16.2-15.1-23.1zM916 556c-31.2-31.2-81.9-31.2-113.1 0L736 622.9V208c0-44.2-35.8-80-80-80s-80 35.8-80 80v608c0 21.1 8.2 40.3 21.5 54.6 1.2 1.3 2.5 2.6 3.9 3.9 6.9 6.5 14.8 11.5 23.1 15.1 9.7 4.2 20.3 6.5 31.5 6.5s21.9-2.3 31.5-6.5c8.3-3.6 16.1-8.6 23.1-15.1.7-.7 1.5-1.4 2.2-2.1L916 669.1c31.2-31.2 31.2-81.9 0-113.1z" />
+      </svg>
+    </span>
+    <span>排序</span>
+  </button>
+  {#if open}
+    <div bind:this={popoverRef} class="changeRowHeight">
+      <div class="viewSort">
+        <div class="boxTop">
+          <div class="tip">设置排序</div>
+          <div class="keepSort">自动排序
+            <Button  buttonRole="switch" size="small"></Button>
           </div>
         </div>
-      {/each}
-      <div class="addNewButton" on:click='{handleAddNewCondition}'>
-        <div class="iconAdd">
-        <svg viewbox="0 0 16 16" width="16" height="16" fill="#8C8C8C">
-          <path d="M12.3 7.2H8.8V3.6c0-.4-.3-.8-.8-.8s-.8.4-.8.8v3.6H3.5c-.4 0-.8.4-.8.8s.3.8.8.8h3.8v3.7c0 .4.3.8.8.8s.8-.3.8-.8V8.8h3.5c.3 0 .6-.4.6-.8s-.3-.8-.7-.8z"></path>
-        </svg>
-        </div>添加筛选条件
+        <main>
+          <div class="droppable">
+            <div class="draggable">
+              <div class="iconDrag">
+                <svg width="10" height="10" viewBox="0 0 10 10" class="sc-hKwCoD sc-eCImvq fgBDdK iZagEg" size="10" fill="#C9C9C9" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <path d="M4 1C4 1.55228 3.55228 2 3 2C2.44772 2 2 1.55228 2 1C2 0.447715 2.44772 0 3 0C3.55228 0 4 0.447715 4 1ZM4 5C4 5.55228 3.55228 6 3 6C2.44772 6 2 5.55228 2 5C2 4.44772 2.44772 4 3 4C3.55228 4 4 4.44772 4 5ZM3 10C3.55228 10 4 9.55229 4 9C4 8.44771 3.55228 8 3 8C2.44772 8 2 8.44771 2 9C2 9.55229 2.44772 10 3 10ZM8 1C8 1.55228 7.55228 2 7 2C6.44772 2 6 1.55228 6 1C6 0.447715 6.44772 0 7 0C7.55228 0 8 0.447715 8 1ZM7 6C7.55228 6 8 5.55228 8 5C8 4.44772 7.55228 4 7 4C6.44772 4 6 4.44772 6 5C6 5.55228 6.44772 6 7 6ZM8 9C8 9.55229 7.55228 10 7 10C6.44772 10 6 9.55229 6 9C6 8.44771 6.44772 8 7 8C7.55228 8 8 8.44771 8 9Z" fill="inherit" fill-rule="evenodd" clip-rule="evenodd"></path>
+                </svg>
+              </div>
+              <div class="sortOptions">
+                <div style="width: max-content;">
+                  
+                </div>
+                <div class="rules">
+                  <div class="asc active">A
+                    <div class="iconArrow">
+                      <svg viewBox="0 0 15 15" width="1em" height="1em" fill="#FFFFFF">
+                        <path class="datasheet_icon_toward_right_gray_svg__st0" d="M12.5 7.7c0-.1-.1-.1-.1-.1L7.8 4.5c-.3-.1-.6-.1-.7.2-.1 0-.1.1-.1.2V7H3c-.6 0-1 .4-1 1s.4 1 1 1h4v2.1c0 .3.2.5.5.5.1 0 .2 0 .3-.1l4.6-3.1c.2-.1.3-.4.1-.7z"></path>
+                      </svg>
+                    </div>Z
+                  </div>
+                  <div class="desc">Z
+                    <div class="iconArrow">
+                      <svg viewBox="0 0 15 15" width="1em" height="1em" fill="#8C8C8C">
+                        <path class="datasheet_icon_toward_right_gray_svg__st0" d="M12.5 7.7c0-.1-.1-.1-.1-.1L7.8 4.5c-.3-.1-.6-.1-.7.2-.1 0-.1.1-.1.2V7H3c-.6 0-1 .4-1 1s.4 1 1 1h4v2.1c0 .3.2.5.5.5.1 0 .2 0 .3-.1l4.6-3.1c.2-.1.3-.4.1-.7z"></path>
+                      </svg>
+                    </div>A
+                  </div>
+                  </div>
+                  <button type="button"  style="color: rgb(201, 201, 201); margin-left: 10px;">
+                    <span class="btn-icon">
+                      <svg viewBox="0 0 16 16" width="15" height="15" fill="#C9C9C9" class="">
+                        <path d="M14 4h-3V3c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v1H2c-.6 0-1 .4-1 1s.4 1 1 1h1v6c0 1.7 1.3 3 3 3h4c1.7 0 3-1.3 3-3V6h1c.6 0 1-.4 1-1s-.4-1-1-1zM7 3h2v1H7V3zm4 9c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1V6h6v6z"></path>
+                      </svg>
+                    </span>
+                    <span></span>
+                  </button>
+                </div>
+              </div>
+        </main>
+        <div class="selectField">
+          <div class="sortOptions addOption">
+            <div style="width: max-content;">
+              <div class="selectTriggerContainer select" tabindex="-1">
+                <span class="content">
+                  <span class="placeholder">请选择一个选项</span>
+                </span>
+                <span class="suffixIcon">
+                  <svg viewBox="0 0 16 16" width="16" height="16" fill="#8C8C8C">
+                    <path d="M8 11c-.3 0-.5-.1-.7-.3l-4-4c-.4-.4-.4-1 0-1.4s1-.4 1.4 0L8 8.6l3.3-3.3c.4-.4 1-.4 1.4 0s.4 1 0 1.4l-4 4c-.2.2-.4.3-.7.3z"></path>
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      </div>
-</PopOver>
-{/if}
+    </div>
+  {/if}
+</span>
 
 <style>
-
-.viewFilter {
-  width: 600px;
-  padding: 24px;
-  box-sizing: border-box;
-  z-index: 10;
-  cursor: default;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  .btn-wrapper{
+    display:inline-block;
+  }
+  .changeRowHeight{
+    width: 470px;
+    box-shadow: 1px 1px 14px #e5e5e5;
+    box-sizing: border-box;
+    background: #fff;
+    z-index: 10;
+    padding: 20px 0;
+    border-radius: 4px;
+    cursor: default;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .boxTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 0 20px;
 }
-.condition {
-  padding-top: 2px;
-  max-height: 500px;
-  overflow-y: auto;
+  .tip{
+    font-size: 13px;
+    color: #8c8c8c;
+  }
+  .keepSort {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
 }
-.addNewButton {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  width: -webkit-max-content;
-  width: -moz-max-content;
-  width: max-content;
-}
-.conditionItem {
-  display: flex;
-  align-items: center;
-  font-size: 13px;
-  margin-bottom: 16px;
-}
-.junction {
-  width: 64px;
-  height: 40px;
-  line-height: 40px!important;
-  margin-right: 24px!important;
-  background: #f2f4f6;
-  border-radius: 4px;
-  justify-content: flex-start;
-  display: flex!important;
-}
-.field {
-  width: 128px;
-  margin-right: 8px!important;
-  background: #f2f4f6;
-}
-
-.filterValue{
-    flex: 1 1;
-    width: 0;
+.draggable {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
     height: 40px;
-    margin-right: 8px;
 }
-.inputContainer {
-  height: 100%;
-}
-
 </style>

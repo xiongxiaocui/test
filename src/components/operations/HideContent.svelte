@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { tick } from "svelte";
   import PopOver from './../../UI/PopOver.svelte'
   import Button from './../../UI/Button.svelte'
   // const dispatch = createEventDispatcher();
