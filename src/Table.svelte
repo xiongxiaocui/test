@@ -127,7 +127,11 @@ const handleHeight = e => {
     highest: '120px'
   }
   styles['row-height'] = heightMap[detail]
-
+}
+// 设置全选
+let isAllSelected = false
+const handleToggleSelectAll = () => {
+  isAllSelected = !isAllSelected
 }
 </script>
 
@@ -149,6 +153,19 @@ const handleHeight = e => {
   <table id="table" bind:this={table} class="display nowrap">
     <thead>
       <tr>
+        <th>
+          <div class="headerIcon" on:click="{handleToggleSelectAll}">
+            <svg fill={isAllSelected? "#7B67EE": "#8C8C8C"} viewBox="0 0 15 15" width="15" height="15">
+              {#if isAllSelected}
+                <path class="common_icon_multiple_select_svg__st0" d="M13 1H2c-.6 0-1 .4-1 1v11c0 .6.4 1 1 1h11c.6 0 1-.4 1-1V2c0-.6-.4-1-1-1zm-1.4 5l-4.3 4.2c-.1.1-.3.2-.5.2s-.4-.1-.5-.2L3.5 7.4c-.3-.3-.3-.8 0-1.1s.8-.3 1.1 0l2.3 2.3 3.7-3.7c.3-.3.8-.3 1.1 0 .2.3.2.8-.1 1.1z"></path>
+                {:else}
+                <path class="common_icon_multiple_normal_svg__st0" d="M12.2 1H2.8C1.8 1 1 1.8 1 2.8v9.5c0 1 .8 1.8 1.8 1.8h9.5c1 0 1.8-.8 1.8-1.8V2.8c-.1-1-.9-1.8-1.9-1.8zm.3 11.2c0 .1-.1.2-.2.2H2.8c-.1 0-.2-.1-.2-.2V2.8c0-.1.1-.2.2-.2h9.5c.1 0 .2.1.2.2v9.4z">
+              </path>
+              {/if}
+
+						</svg>
+					</div>
+        </th>
         {#each headings as heading}
           {#if heading.show}
             <th on:click="{editHeader.bind(this, heading)}" style={getStyle(heading)}>{heading.title}</th>
@@ -160,6 +177,7 @@ const handleHeight = e => {
     <tbody>
       {#each filteredData as obj, index}
         <tr>
+          <td>{index + 1}</td>
           {#each headings as heading}
             {#if heading.show}
               <td on:dblclick={() => editCell(index, heading.property)}>
@@ -257,5 +275,10 @@ const handleHeight = e => {
     background-color: #f2f4f6;
     padding: 10px;
   }
-
+  * {
+    box-sizing: border-box;
+  }
+  button {
+    cursor: pointer;
+  }
 </style>

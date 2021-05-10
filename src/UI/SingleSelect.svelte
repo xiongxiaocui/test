@@ -12,7 +12,7 @@
 	const dispatch = createEventDispatcher()
 	const dispatchDebounce = debounce(dispatch, 1000)
 
-	$:firstSelectedTxt = showFirst && options && Array.isArray(options) && options.length > 0 && options[0].title
+	$:firstSelectedTxt = showFirst && options && Array.isArray(options) && options.length > 0 && options[0].title || '请选择一个选项'
 	const toggleShow = async () => {
 		selected = !selected
 		setTimeout(() => {
@@ -106,6 +106,7 @@
 }
 
 .optionList{
+	box-sizing: border-box;
   padding: 4px 0;
   border-radius: 4px;
 }
@@ -149,6 +150,14 @@
 }
 .selectActive{
 	color: #7b67ee;;
+}
+.optionLabel{
+	display: inline-block;
+  font-size: 13px;
+  color: #8c8c8c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 @keyframes spin {
   from {

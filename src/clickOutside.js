@@ -1,5 +1,6 @@
 function clickOutside(node, { enabled: initialEnabled, cb }) {
     const handleOutsideClick = ({ target }) => {
+      console.log(node.contains(target))
       if (!node.contains(target)) {
         cb();
       }

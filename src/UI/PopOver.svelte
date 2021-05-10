@@ -1,25 +1,15 @@
 <script>
-import { createPopper } from '@popperjs/core/';
-import { onMount } from 'svelte'
 export let width = ""
 export let height = "auto"
 
 let popoverRef
 let btnRef
 
-onMount(() => {
-	// const curElem = document.getElementById(popId)
-  // const curElem = btnRef
-		createPopper(btnRef, popoverRef, {
-			placement: 'bottom'
-		})
-})
 </script>
-<svelte:body/>
 <span bind:this={btnRef}>
   <slot name="button"></slot>
 </span>
-<div style="width:{width};height: {height}" role='tooltip' bind:this={popoverRef} class="popoverWrapper">
+<div id='wrapper'  style="width:{width};height: {height}" role='tooltip' bind:this={popoverRef} class="popoverWrapper">
 	<slot name="content"></slot>
 </div>
 <style>
