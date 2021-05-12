@@ -9,6 +9,7 @@
   import GroupOperation from './components/operations/GroupContent.svelte'
   import RankOperation from './components/operations/RankContent.svelte'
   import HeightOperation from './components/operations/HeightContent.svelte'
+  import CustomMenu from './components/contextMenu/MainMenu.svelte'
   export let data: ScoutField[];
   export let headings: Heading[];
   export let title: string;
@@ -111,8 +112,6 @@
       }
       return false
     })
-    // console.log(filterSearchStr)
-    // console.log(option, "-----")
   }
 
 // 修改杭高
@@ -132,6 +131,25 @@ const handleHeight = e => {
 let isAllSelected = false
 const handleToggleSelectAll = () => {
   isAllSelected = !isAllSelected
+  filteredData.map(item => item.checked = isAllSelected)
+}
+
+$:isAllChecked = filteredData && filteredData.filter(item => !item.checked).length === 0
+
+// 选中某行的时候，出现选择对话框，并且悬浮色
+const handleTrEnter = (index) => {
+  filteredData[index].isHover = true
+}
+// 某一行消失的时候，还原
+const handleTrMove = index => {
+  filteredData[index].isHover = false
+}
+
+// handle checked
+const handleToggleChecked = index => {
+  const isChecked = filteredData[index].checked
+  console.log(isChecked)
+  filteredData[index].checked = !isChecked
 }
 </script>
 
@@ -155,14 +173,13 @@ const handleToggleSelectAll = () => {
       <tr>
         <th>
           <div class="headerIcon" on:click="{handleToggleSelectAll}">
-            <svg fill={isAllSelected? "#7B67EE": "#8C8C8C"} viewBox="0 0 15 15" width="15" height="15">
-              {#if isAllSelected}
+            <svg fill={isAllSelected || isAllChecked? "#7B67EE": "#8C8C8C"} viewBox="0 0 15 15" width="15" height="15">
+              {#if isAllSelected || isAllChecked}
                 <path class="common_icon_multiple_select_svg__st0" d="M13 1H2c-.6 0-1 .4-1 1v11c0 .6.4 1 1 1h11c.6 0 1-.4 1-1V2c0-.6-.4-1-1-1zm-1.4 5l-4.3 4.2c-.1.1-.3.2-.5.2s-.4-.1-.5-.2L3.5 7.4c-.3-.3-.3-.8 0-1.1s.8-.3 1.1 0l2.3 2.3 3.7-3.7c.3-.3.8-.3 1.1 0 .2.3.2.8-.1 1.1z"></path>
                 {:else}
                 <path class="common_icon_multiple_normal_svg__st0" d="M12.2 1H2.8C1.8 1 1 1.8 1 2.8v9.5c0 1 .8 1.8 1.8 1.8h9.5c1 0 1.8-.8 1.8-1.8V2.8c-.1-1-.9-1.8-1.9-1.8zm.3 11.2c0 .1-.1.2-.2.2H2.8c-.1 0-.2-.1-.2-.2V2.8c0-.1.1-.2.2-.2h9.5c.1 0 .2.1.2.2v9.4z">
               </path>
               {/if}
-
 						</svg>
 					</div>
         </th>
@@ -176,8 +193,20 @@ const handleToggleSelectAll = () => {
     </thead>
     <tbody>
       {#each filteredData as obj, index}
-        <tr>
-          <td>{index + 1}</td>
+        <tr class={obj.checked ? "selected": ""} on:mouseenter="{handleTrEnter.bind(this, index)}" on:mouseleave="{handleTrMove.bind(this, index)}">
+          <td>
+            {#if obj.isHover}
+              {#if obj.checked}
+                <svg class='cursor' on:click="{handleToggleChecked.bind(this, index)}" viewBox="0 0 15 15" width="15" height="15" fill="#7B67EE"><path class="common_icon_multiple_select_svg__st0" d="M13 1H2c-.6 0-1 .4-1 1v11c0 .6.4 1 1 1h11c.6 0 1-.4 1-1V2c0-.6-.4-1-1-1zm-1.4 5l-4.3 4.2c-.1.1-.3.2-.5.2s-.4-.1-.5-.2L3.5 7.4c-.3-.3-.3-.8 0-1.1s.8-.3 1.1 0l2.3 2.3 3.7-3.7c.3-.3.8-.3 1.1 0 .2.3.2.8-.1 1.1z"></path></svg>
+                {:else}
+                <svg class='cursor' on:click="{handleToggleChecked.bind(this, index)}" viewBox="0 0 15 15" width="15" height="15"><path class="common_icon_multiple_normal_svg__st0 svelte-1lgyxdi" d="M12.2 1H2.8C1.8 1 1 1.8 1 2.8v9.5c0 1 .8 1.8 1.8 1.8h9.5c1 0 1.8-.8 1.8-1.8V2.8c-.1-1-.9-1.8-1.9-1.8zm.3 11.2c0 .1-.1.2-.2.2H2.8c-.1 0-.2-.1-.2-.2V2.8c0-.1.1-.2.2-.2h9.5c.1 0 .2.1.2.2v9.4z"></path></svg>
+              {/if}
+            {:else if isAllSelected || obj.checked || isAllChecked}
+              <svg class='cursor' on:click="{handleToggleChecked.bind(this, index)}" viewBox="0 0 15 15" width="15" height="15" fill="#7B67EE"><path class="common_icon_multiple_select_svg__st0" d="M13 1H2c-.6 0-1 .4-1 1v11c0 .6.4 1 1 1h11c.6 0 1-.4 1-1V2c0-.6-.4-1-1-1zm-1.4 5l-4.3 4.2c-.1.1-.3.2-.5.2s-.4-.1-.5-.2L3.5 7.4c-.3-.3-.3-.8 0-1.1s.8-.3 1.1 0l2.3 2.3 3.7-3.7c.3-.3.8-.3 1.1 0 .2.3.2.8-.1 1.1z"></path></svg>
+            {:else}
+              <span on:click="{handleToggleChecked.bind(this, index)}">{index + 1}</span>
+            {/if}
+          </td>
           {#each headings as heading}
             {#if heading.show}
               <td on:dblclick={() => editCell(index, heading.property)}>
@@ -215,6 +244,7 @@ const handleToggleSelectAll = () => {
       {/each}
     </tbody>
   </table>
+  <CustomMenu></CustomMenu>
 </section>
 
 <style>
@@ -280,5 +310,12 @@ const handleToggleSelectAll = () => {
   }
   button {
     cursor: pointer;
+  }
+  .cursor{
+    cursor: pointer;
+    display:block;
+  }
+  .selected {
+    background: #dcd6ff;
   }
 </style>
