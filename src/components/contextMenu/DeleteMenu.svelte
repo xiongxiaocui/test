@@ -1,8 +1,11 @@
 <script>
 	import Menu from './Menu.svelte';
 	import MenuOption from './MenuOption.svelte';
-	import MenuDivider from './MenuDivider.svelte';
-
+	import DeleteIcon from './../icon/Delete.svelte'
+	import {createEventDispatcher} from 'svelte'
+	export let totalCount
+	
+	const dispatcher = createEventDispatcher()
 	let pos = { x: 0, y: 0 };
 	let showMenu = false;
 
@@ -19,23 +22,16 @@
 	function closeMenu() {
 		showMenu = false;
 	}
+
+	function onClickOption() {
+		dispatcher('deleteAll')
+	}
 </script>
 
 {#if showMenu}
 	<Menu {...pos} on:click={closeMenu} on:clickoutside={closeMenu}>
-		<MenuOption
-			on:click={console.log}
-			text="Do nothing" />
-		<MenuOption
-			on:click={console.log}
-			text="Do nothing, but twice" />
-		<MenuDivider />
-		<MenuOption
-			isDisabled={true}
-			on:click={console.log}
-			text="Whoops, disabled!" />
-		<MenuOption on:click={console.log}>
-			<span>Look! An icon!</span>
+		<MenuOption on:click={onClickOption}>
+			<DeleteIcon /><span>删除这{totalCount}行</span>
 		</MenuOption>
 	</Menu>
 {/if}

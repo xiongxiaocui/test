@@ -9,13 +9,14 @@
   import GroupOperation from './components/operations/GroupContent.svelte'
   import RankOperation from './components/operations/RankContent.svelte'
   import HeightOperation from './components/operations/HeightContent.svelte'
-  import CustomMenu from './components/contextMenu/MainMenu.svelte'
+  import DeleteMenu from './components/contextMenu/DeleteMenu.svelte'
   export let data: ScoutField[];
   export let headings: Heading[];
   export let title: string;
 
   let editIndex: number;
   let editProperty: string;
+  let activePropery: string
   let table: HTMLTableElement;
   // let headerPopref: HTMLDivElement
   let filteredData
@@ -136,6 +137,8 @@ const handleToggleSelectAll = () => {
 
 $:isAllChecked = filteredData && filteredData.filter(item => !item.checked).length === 0
 
+$:totalCount = filteredData && filteredData.length
+
 // 选中某行的时候，出现选择对话框，并且悬浮色
 const handleTrEnter = (index) => {
   filteredData[index].isHover = true
@@ -148,8 +151,18 @@ const handleTrMove = index => {
 // handle checked
 const handleToggleChecked = index => {
   const isChecked = filteredData[index].checked
-  console.log(isChecked)
   filteredData[index].checked = !isChecked
+}
+
+const showEditStatus = (index, property) => {
+  editIndex = index;
+  activePropery = property;
+}
+
+$: showDeleteIcon = isAllSelected || isAllChecked
+// 删除所有数据
+const handleDeleteAll = () => {
+  filteredData = []
 }
 </script>
 
@@ -173,7 +186,7 @@ const handleToggleChecked = index => {
       <tr>
         <th>
           <div class="headerIcon" on:click="{handleToggleSelectAll}">
-            <svg fill={isAllSelected || isAllChecked? "#7B67EE": "#8C8C8C"} viewBox="0 0 15 15" width="15" height="15">
+            <svg fill={isAllSelected || isAllChecked ? "#7B67EE": "#8C8C8C"} viewBox="0 0 15 15" width="15" height="15">
               {#if isAllSelected || isAllChecked}
                 <path class="common_icon_multiple_select_svg__st0" d="M13 1H2c-.6 0-1 .4-1 1v11c0 .6.4 1 1 1h11c.6 0 1-.4 1-1V2c0-.6-.4-1-1-1zm-1.4 5l-4.3 4.2c-.1.1-.3.2-.5.2s-.4-.1-.5-.2L3.5 7.4c-.3-.3-.3-.8 0-1.1s.8-.3 1.1 0l2.3 2.3 3.7-3.7c.3-.3.8-.3 1.1 0 .2.3.2.8-.1 1.1z"></path>
                 {:else}
@@ -192,61 +205,67 @@ const handleToggleChecked = index => {
       </tr>
     </thead>
     <tbody>
-      {#each filteredData as obj, index}
-        <tr class={obj.checked ? "selected": ""} on:mouseenter="{handleTrEnter.bind(this, index)}" on:mouseleave="{handleTrMove.bind(this, index)}">
-          <td>
-            {#if obj.isHover}
-              {#if obj.checked}
-                <svg class='cursor' on:click="{handleToggleChecked.bind(this, index)}" viewBox="0 0 15 15" width="15" height="15" fill="#7B67EE"><path class="common_icon_multiple_select_svg__st0" d="M13 1H2c-.6 0-1 .4-1 1v11c0 .6.4 1 1 1h11c.6 0 1-.4 1-1V2c0-.6-.4-1-1-1zm-1.4 5l-4.3 4.2c-.1.1-.3.2-.5.2s-.4-.1-.5-.2L3.5 7.4c-.3-.3-.3-.8 0-1.1s.8-.3 1.1 0l2.3 2.3 3.7-3.7c.3-.3.8-.3 1.1 0 .2.3.2.8-.1 1.1z"></path></svg>
-                {:else}
-                <svg class='cursor' on:click="{handleToggleChecked.bind(this, index)}" viewBox="0 0 15 15" width="15" height="15"><path class="common_icon_multiple_normal_svg__st0 svelte-1lgyxdi" d="M12.2 1H2.8C1.8 1 1 1.8 1 2.8v9.5c0 1 .8 1.8 1.8 1.8h9.5c1 0 1.8-.8 1.8-1.8V2.8c-.1-1-.9-1.8-1.9-1.8zm.3 11.2c0 .1-.1.2-.2.2H2.8c-.1 0-.2-.1-.2-.2V2.8c0-.1.1-.2.2-.2h9.5c.1 0 .2.1.2.2v9.4z"></path></svg>
-              {/if}
-            {:else if isAllSelected || obj.checked || isAllChecked}
-              <svg class='cursor' on:click="{handleToggleChecked.bind(this, index)}" viewBox="0 0 15 15" width="15" height="15" fill="#7B67EE"><path class="common_icon_multiple_select_svg__st0" d="M13 1H2c-.6 0-1 .4-1 1v11c0 .6.4 1 1 1h11c.6 0 1-.4 1-1V2c0-.6-.4-1-1-1zm-1.4 5l-4.3 4.2c-.1.1-.3.2-.5.2s-.4-.1-.5-.2L3.5 7.4c-.3-.3-.3-.8 0-1.1s.8-.3 1.1 0l2.3 2.3 3.7-3.7c.3-.3.8-.3 1.1 0 .2.3.2.8-.1 1.1z"></path></svg>
-            {:else}
-              <span on:click="{handleToggleChecked.bind(this, index)}">{index + 1}</span>
-            {/if}
-          </td>
-          {#each headings as heading}
-            {#if heading.show}
-              <td on:dblclick={() => editCell(index, heading.property)}>
-                {#if editIndex === index && editProperty === heading.property}
-                  {#if heading.getOptions}
-                    <select
-                      on:blur={e => saveChange(e, index, heading.property)}
-                      on:change={e => saveChange(e, index, heading.property)}
-                      value={obj[heading.property]}>
-                      {#each heading.getOptions() as option}
-                        <option value={option}>{option}</option>
-                      {/each}
-                    </select>
+      {#if filteredData.length}
+        {#each filteredData as obj, index}
+          <tr class={obj.checked ? "selected": ""} on:mouseenter="{handleTrEnter.bind(this, index)}" on:mouseleave="{handleTrMove.bind(this, index)}">
+            <td>
+              {#if obj.isHover}
+                {#if obj.checked}
+                  <svg class='cursor' on:click="{handleToggleChecked.bind(this, index)}" viewBox="0 0 15 15" width="15" height="15" fill="#7B67EE"><path class="common_icon_multiple_select_svg__st0" d="M13 1H2c-.6 0-1 .4-1 1v11c0 .6.4 1 1 1h11c.6 0 1-.4 1-1V2c0-.6-.4-1-1-1zm-1.4 5l-4.3 4.2c-.1.1-.3.2-.5.2s-.4-.1-.5-.2L3.5 7.4c-.3-.3-.3-.8 0-1.1s.8-.3 1.1 0l2.3 2.3 3.7-3.7c.3-.3.8-.3 1.1 0 .2.3.2.8-.1 1.1z"></path></svg>
                   {:else}
-                    <input
-                      on:blur={handleBlur}
-                      on:keydown={handleKey}
-                      style={getStyle(heading)}
-                      type={heading.type}
-                      use:selectAll
-                      on:change={e => saveChange(e, index, heading.property)}
-                      value={data[index][heading.property]} />
-                  {/if}
-                {:else}<span>{obj[heading.property]}</span>{/if}
-              </td>
-            {/if}
-          {/each}
-          <td class="actions">
-            <button on:click={() => deleteRow(index)} title="delete">✖</button>
-            <button
-              on:click={() => insertRowAfter(index)}
-              title="insert after">➕</button>
-          </td>
-        </tr>
-      {/each}
+                  <svg class='cursor' on:click="{handleToggleChecked.bind(this, index)}" viewBox="0 0 15 15" width="15" height="15"><path class="common_icon_multiple_normal_svg__st0 svelte-1lgyxdi" d="M12.2 1H2.8C1.8 1 1 1.8 1 2.8v9.5c0 1 .8 1.8 1.8 1.8h9.5c1 0 1.8-.8 1.8-1.8V2.8c-.1-1-.9-1.8-1.9-1.8zm.3 11.2c0 .1-.1.2-.2.2H2.8c-.1 0-.2-.1-.2-.2V2.8c0-.1.1-.2.2-.2h9.5c.1 0 .2.1.2.2v9.4z"></path></svg>
+                {/if}
+              {:else if isAllSelected || obj.checked || isAllChecked}
+                <svg class='cursor' on:click="{handleToggleChecked.bind(this, index)}" viewBox="0 0 15 15" width="15" height="15" fill="#7B67EE"><path class="common_icon_multiple_select_svg__st0" d="M13 1H2c-.6 0-1 .4-1 1v11c0 .6.4 1 1 1h11c.6 0 1-.4 1-1V2c0-.6-.4-1-1-1zm-1.4 5l-4.3 4.2c-.1.1-.3.2-.5.2s-.4-.1-.5-.2L3.5 7.4c-.3-.3-.3-.8 0-1.1s.8-.3 1.1 0l2.3 2.3 3.7-3.7c.3-.3.8-.3 1.1 0 .2.3.2.8-.1 1.1z"></path></svg>
+              {:else}
+                <span on:click="{handleToggleChecked.bind(this, index)}">{index + 1}</span>
+              {/if}
+            </td>
+            {#each headings as heading}
+              {#if heading.show}
+                <td class={editIndex === index && (editProperty === heading.property|| activePropery === heading.property) ? "active": ""} on:dblclick={() => editCell(index, heading.property)} on:click="{() => showEditStatus(index, heading.property)}">
+                  {#if editIndex === index && editProperty === heading.property}
+                    {#if heading.getOptions}
+                      <select
+                        on:blur={e => saveChange(e, index, heading.property)}
+                        on:change={e => saveChange(e, index, heading.property)}
+                        value={obj[heading.property]}>
+                        {#each heading.getOptions() as option}
+                          <option value={option}>{option}</option>
+                        {/each}
+                      </select>
+                    {:else}
+                      <input
+                        on:blur={handleBlur}
+                        on:keydown={handleKey}
+                        style={getStyle(heading)}
+                        type={heading.type}
+                        use:selectAll
+                        on:change={e => saveChange(e, index, heading.property)}
+                        value={data[index][heading.property]} />
+                    {/if}
+                  {:else}<span>{obj[heading.property]}</span>{/if}
+                </td>
+              {/if}
+            {/each}
+            <td class="actions">
+              <button on:click={() => deleteRow(index)} title="delete">✖</button>
+              <button
+                on:click={() => insertRowAfter(index)}
+                title="insert after">➕</button>
+            </td>
+          </tr>
+        {/each}
+        {:else}
+        <tr><td class='no-data' colspan="{headings.length+1}">暂无数据</td></tr>
+      {/if}
     </tbody>
   </table>
-  <CustomMenu></CustomMenu>
 </section>
-
+{#if showDeleteIcon }
+  <DeleteMenu totalCount={totalCount} on:deleteAll={handleDeleteAll}></DeleteMenu>
+   <!-- content here -->
+{/if}
 <style>
   .actions button {
     background-color: transparent;
@@ -317,5 +336,12 @@ const handleToggleChecked = index => {
   }
   .selected {
     background: #dcd6ff;
+  }
+  td.active{
+    box-shadow: 0 0 0 1px #7b67ee;
+    border: 2px solid #7b67ee;
+  }
+  .no-data {
+    text-align:center;
   }
 </style>

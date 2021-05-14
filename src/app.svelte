@@ -17,10 +17,10 @@
       getOptions: getGrowers,
       type: 'select',
       show: true,
-      width: 75
+      width: 85
     },
     {title: 'Field', property: 'fieldName', width: 200, type: 'text', show: true},
-    {title: 'Acres', property: 'acres', type: 'number', width: 100 , show: true}
+    {title: 'Acres', property: 'acres', type: 'number' , show: true}
   ];
 
   const data: ScoutField[] = [
