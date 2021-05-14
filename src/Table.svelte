@@ -61,13 +61,13 @@
       fieldName: '',
       acres: 0
     };
-    data.splice(index + 1, 0, item);
-    data = data;
+    filteredData.splice(index + 1, 0, item);
+    filteredData = filteredData;
   }
 
   function saveChange(event, index: number, property: string): void {
-    data[index][property] = event.target.value;
-    data = data;
+    filteredData[index][property] = event.target.value;
+    filteredData = filteredData;
     if (event.target.nodeName === 'SELECT') editProperty = '';
   }
 
@@ -75,7 +75,7 @@
 
   // 插入行
   function addRow() {
-    const len = data.length;
+    const len = filteredData.length;
     insertRowAfter(len - 1);
   }
 
