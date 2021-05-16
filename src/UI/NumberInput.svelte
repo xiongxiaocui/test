@@ -2,9 +2,12 @@
 	let inputRef
 	let value
 	let active = false
+
 	export let onChange
+	export let onBlur
 	export let min = 0
 	export let max = 100
+	
 	function setActiveStatus() {
 		active = true
 	}
@@ -13,20 +16,23 @@
 	}
 
 	function enforceMinMax(el){
-		const curElem =  el.target
+		const curElem = el.target
 		const curValue = curElem.value
 		const min = curElem.min
 		const max = curElem.max
 		if(curValue != ""){
 			if(parseInt(curValue) < parseInt()){
 				curElem.value = min
+				value = min
 			}
 			if(parseInt(curValue) > parseInt(max)){
 				curElem.value = max;
+				value = max
 			}
 		}
 }
 	$:onChange(value)
+	$:onBlur(value)
 </script>
 <div class='inputWrapper' class:active={active}>
 	<input

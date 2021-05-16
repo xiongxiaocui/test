@@ -5,6 +5,7 @@
   export let value = [];
   export let readonly = false;
   export let placeholder = '';
+  export let onChange
 
   let input,
     inputValue,
@@ -35,6 +36,7 @@
   $: filtered = options.filter(o =>
     inputValue ? o.name.toLowerCase().includes(inputValue.toLowerCase()) : o
   );
+  $:onChange(value)
   $: if (
     (activeOption && !filtered.includes(activeOption)) ||
     (!activeOption && inputValue)
@@ -42,7 +44,7 @@
     activeOption = filtered[0];
 
   function add(token) {
-    if (!readonly) selected[token.value] = token;
+    if (!readonly && token && token.value) selected[token.value] = token;
   }
 
   function remove(value) {

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SingleMenu from './components/contextMenu/SingleMenu.svelte';
   import type {Heading, ScoutField} from './types';
   import Modal from './components/modal/Modal.svelte';
   import AddContent from './components/operations/AddContent.svelte'
@@ -10,10 +11,8 @@
   import RankOperation from './components/operations/RankContent.svelte'
   import HeightOperation from './components/operations/HeightContent.svelte'
   import DeleteMenu from './components/contextMenu/DeleteMenu.svelte'
-  import SingleMenu from './components/contextMenu/SingleMenu.svelte'
-
   import clickOutside from './clickOutside.js'
-import SingleSelect from './UI/SingleSelect.svelte';
+  import SingleSelect from './UI/SingleSelect.svelte'; 
   export let data: ScoutField[];
   export let headings: Heading[];
   export let title: string;
@@ -35,10 +34,9 @@ import SingleSelect from './UI/SingleSelect.svelte';
 		.map(([key, value]) => `--${key}:${value}`)
 		.join(';');
 
-
-  function deleteRow(index: number): void {
-    filteredData.splice(index, 1);
-    filteredData = filteredData;
+  function deleteSingleRow():void {
+    const data = filteredData && filteredData.filter(item => !item.checked)
+    filteredData = data
   }
 
   function editCell(index: number, property: string): void {
@@ -81,7 +79,31 @@ import SingleSelect from './UI/SingleSelect.svelte';
   function addRow() {
     const len = filteredData.length;
     insertRowAfter(len - 1);
+    // console.log('after')
   }
+
+  // 向上插入行
+  function insertRowBefore() {
+    const index = filteredData && filteredData.findIndex(item => item.checked)
+    insertRowAfter(index - 1)
+  }
+
+  // 向下插入行
+  function handleInsertAfter() {
+    const index = filteredData && filteredData.findIndex(item => item.checked)
+    insertRowAfter(index)
+  }
+
+  // 复制行
+  function copyRow() {
+    const index = filteredData && filteredData.findIndex(item => item.checked)
+    const item: ScoutField = {...filteredData[index], checked:false}
+    filteredData.splice(index + 1, 0, item);
+    filteredData = filteredData;
+  }
+
+  // 展开行
+  function expandRow() {}
 
   // 编辑头部
   const editHeader = (el, option) => {
@@ -122,7 +144,6 @@ import SingleSelect from './UI/SingleSelect.svelte';
 // 修改行高
 const handleHeight = e => {
   const { detail } = e
-  console.log(detail)
   const heightMap = {
     default: "42px",
     medium: '60px',
@@ -179,6 +200,18 @@ $: showSingleComp = filteredData && checkedCount === 1
 const handleDeleteAll = () => {
   filteredData = filteredData && filteredData.filter(item => !item.checked)
 }
+
+// 插入行进行补充
+const fillRow = data => {
+  // console.log(data)
+  const {detail} = data
+  const values = Object.values(detail)
+  const keys = Object.keys(detail)
+  const len = filteredData && filteredData.length - 1
+  keys.forEach(item => {
+    filteredData[len][item] = detail[item]
+  })
+}
 </script>
 
 <section style="{cssVarStyles}">
@@ -186,7 +219,7 @@ const handleDeleteAll = () => {
   <!-- 操作按钮开始 -->
   <div class="actions">
     <Modal>
-      <AddContent on:addRow={addRow} bind:headings={headings}></AddContent>
+      <AddContent on:addRow={addRow} on:fillRow={fillRow} bind:headings={headings}></AddContent>
     </Modal>
       <HideContent bind:headings={headings}></HideContent>
       <FilterOperation  bind:headings={headings} on:filter-table="{handleFilter}"></FilterOperation>
@@ -216,7 +249,6 @@ const handleDeleteAll = () => {
             <th on:click="{editHeader.bind(this, heading)}" style={getStyle(heading)}>{heading.title}</th>
           {/if}
         {/each}
-        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -257,18 +289,12 @@ const handleDeleteAll = () => {
                         type={heading.type}
                         use:selectAll
                         on:change={e => saveChange(e, index, heading.property)}
-                        value={data[index][heading.property]} />
+                        value={filteredData[index][heading.property]} />
                     {/if}
                   {:else}<span>{obj[heading.property]}</span>{/if}
                 </td>
               {/if}
             {/each}
-            <td class="actions">
-              <button on:click={() => deleteRow(index)} title="delete">✖</button>
-              <button
-                on:click={() => insertRowAfter(index)}
-                title="insert after">➕</button>
-            </td>
           </tr>
         {/each}
         {:else}
@@ -281,16 +307,15 @@ const handleDeleteAll = () => {
   <DeleteMenu totalCount={checkedCount} on:deleteAll={handleDeleteAll}></DeleteMenu>
 {/if}
 {#if showSingleComp}
-  <SingleMenu></SingleMenu>
+  <SingleMenu
+    on:deleteSingleItem={deleteSingleRow}
+    on:insertRowBefore={insertRowBefore}
+    on:insertRowAfter={handleInsertAfter}
+    on:copyRow={copyRow}
+    on:expandRow={expandRow}
+  ></SingleMenu>
 {/if}
 <style>
-  .actions button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    margin-bottom: 0;
-
-  }
 
   input,
   select {
@@ -343,9 +368,6 @@ const handleDeleteAll = () => {
   }
   * {
     box-sizing: border-box;
-  }
-  button {
-    cursor: pointer;
   }
   .cursor{
     cursor: pointer;

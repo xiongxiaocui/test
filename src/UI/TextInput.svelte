@@ -3,16 +3,20 @@
 	let value
 	let active = false
 	export let onChange
+	export let onBlur
 	export let height = "auto"
 	function setActiveStatus() {
 		active = true
 	}
 	function removeActiveStatus() {
 		active = false
+		onChange(value)
 	}
+	
 	$:onChange(value)
+	$:onBlur(value)
 
-		// $:console.log(value)
+		// $:console.log(value
 </script>
 <div class='inputWrapper' class:active={active} style="height: {height}">
 	<input

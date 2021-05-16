@@ -6,8 +6,12 @@
   export let title;
   export let hasForm = false;
   export let options;
-  export let onCancel = () => {};
+  export let onCancel = () => {
+    console.log('取消')
+  };
   export let onOkay = () => {};
+
+  let dialogData = {}
   const { close } = getContext('simple-modal');
 
   function _onCancel() {
@@ -16,14 +20,22 @@
   }
 
   function _onOkay() {
-    onOkay();
+    onOkay(dialogData);
     close();
   }
 
   // input change
-  const handleChange = value => {
-    console.log(value)
+  const handleChange = () => {};
+
+  const handleBlur = (val,options, i) => {
+    const { property } = options
+    dialogData[property] = val
   };
+
+  const getSelectedValue = (val, options) => {
+    const { property } = options
+    dialogData[property] = val
+  }
 </script>
 
 <button class="close" on:click={_onCancel}> Close </button>
@@ -37,12 +49,12 @@
       <div class="field-cell">
         {#if option.type === 'text'}
           <!-- 文字类型组件 -->
-          <TextInput onChange={() =>handleChange(option, i)} />
+          <TextInput onChange={() => handleChange()} onBlur={(val) => handleBlur(val, option)} />
         {:else if option.type === 'number'}
           <!-- 数字类型组件 -->
-          <NumberInput onChange={handleChange(option, i)} />
+          <NumberInput onChange={() =>handleChange() } onBlur={(val) => handleBlur(val, option)} />
         {:else if option.type === 'select'}
-          <MultiSelect>
+          <MultiSelect onChange={(val) => getSelectedValue(val, option)}>
             {#each option.getOptions() as listItem, i (i)}
               <option>{listItem}</option>
             {/each}

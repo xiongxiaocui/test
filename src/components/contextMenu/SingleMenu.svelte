@@ -3,7 +3,7 @@
 	import MenuOption from './MenuOption.svelte';
 	import {createEventDispatcher} from 'svelte'
 	
-	const dispatcher = createEventDispatcher()
+	const dispatch = createEventDispatcher()
 	let pos = { x: 0, y: 0 };
 	let showMenu = false;
 
@@ -21,15 +21,31 @@
 		showMenu = false;
 	}
 
-	function onClickOption() {
-		dispatcher('deleteAll')
+	function handleMenuDelete() {
+		dispatch('deleteSingleItem')
+	}
+
+	function insertRowBefore() {
+		dispatch('insertRowBefore')
+	}
+
+	function insertRowAfter() {
+		dispatch('insertRowAfter')
+	}
+
+	function copyRow() {
+		dispatch('copyRow')
+	}
+
+	function expandRow() {
+		dispatch('expandRow')
 	}
 </script>
 
 {#if showMenu}
 	<Menu {...pos} on:click={closeMenu} on:clickoutside={closeMenu}>
 			<div class="react-contexify">
-				<MenuOption>
+				<MenuOption on:click={insertRowBefore}>
 					<div class="react-contexify__item" role="presentation">
 						<div class="react-contexify__item__content">
 							<div class="contextmenuItem">
@@ -40,12 +56,11 @@
 										fill="inherit" fill-rule="evenodd" clip-rule="evenodd"></path>
 								</svg>
 								<div class="name">向上方插入行</div>
-								<!-- <div class="shortcutKey">⌘ ⇧ Enter</div> -->
 							</div>
 						</div>
 					</div>
 				</MenuOption>
-					<MenuOption>
+					<MenuOption on:click={insertRowAfter}>
 						<div class="react-contexify__item" role="presentation">
 							<div class="react-contexify__item__content">
 								<div class="contextmenuItem">
@@ -62,7 +77,7 @@
 							</div>
 						</div>
 					</MenuOption>
-					<MenuOption>
+					<MenuOption on:click={copyRow}>
 						<div class="react-contexify__item" role="presentation">
 							<div class="react-contexify__item__content">
 								<div class="contextmenuItem">
@@ -79,7 +94,7 @@
 							</div>
 						</div>
 					</MenuOption>
-					<MenuOption>
+					<MenuOption on:click={expandRow}>
 						<div class="react-contexify__item" role="presentation">
 							<div class="react-contexify__item__content">
 								<div class="contextmenuItem"><svg width="16" height="16" viewBox="0 0 16 16"
@@ -95,7 +110,7 @@
 							</div>
 						</div>
 					</MenuOption>
-					<MenuOption>
+					<MenuOption on:click={handleMenuDelete}>
 						<div class="react-contexify__item" role="presentation">
 							<div class="react-contexify__item__content">
 								<div class="contextmenuItem">

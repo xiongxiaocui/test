@@ -13,9 +13,11 @@
 		console.log(status)
 	}
 
-	const onOkay = (text) => {
+	const onOkay = (data) => {
 		status = 1;
-		console.log(status)
+		// console.log(status)
+		// console.log(data)
+		dispatch('fillRow', data)
 	}
 
   const showDialog = () => {

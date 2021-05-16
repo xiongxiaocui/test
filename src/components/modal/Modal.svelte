@@ -231,7 +231,7 @@
 
   .content {
     position: relative;
-    padding: 1rem;
+    padding: 2rem;
     max-height: calc(100vh - 4rem);
     overflow: auto;
   }
