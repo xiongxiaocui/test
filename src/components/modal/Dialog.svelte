@@ -37,17 +37,16 @@
       <div class="field-cell">
         {#if option.type === 'text'}
           <!-- 文字类型组件 -->
-          <TextInput onChange={handleChange} />
+          <TextInput onChange={() =>handleChange(option, i)} />
         {:else if option.type === 'number'}
           <!-- 数字类型组件 -->
-          <NumberInput onChange={handleChange} />
+          <NumberInput onChange={handleChange(option, i)} />
         {:else if option.type === 'select'}
           <MultiSelect>
             {#each option.getOptions() as listItem, i (i)}
               <option>{listItem}</option>
             {/each}
           </MultiSelect>
-          <!-- <div>---</div> -->
         {/if}
       </div>
     </div>

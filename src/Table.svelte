@@ -10,6 +10,8 @@
   import RankOperation from './components/operations/RankContent.svelte'
   import HeightOperation from './components/operations/HeightContent.svelte'
   import DeleteMenu from './components/contextMenu/DeleteMenu.svelte'
+
+  import clickOutside from './clickOutside.js'
   export let data: ScoutField[];
   export let headings: Heading[];
   export let title: string;
@@ -115,10 +117,9 @@
     })
   }
 
-// 修改杭高
+// 修改行高
 const handleHeight = e => {
-  // console.log(val)
-  const {detail} = e
+  const { detail } = e
   console.log(detail)
   const heightMap = {
     default: "42px",
@@ -157,6 +158,12 @@ const handleToggleChecked = index => {
 const showEditStatus = (index, property) => {
   editIndex = index;
   activePropery = property;
+}
+
+const resetEditStatus = (index, property) => {
+  console.log("reset")
+  activePropery = null
+  editIndex = null
 }
 
 $: showDeleteIcon = isAllSelected || isAllChecked

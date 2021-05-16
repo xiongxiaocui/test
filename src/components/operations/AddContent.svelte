@@ -5,25 +5,20 @@
 
 	const { open } = getContext('simple-modal');
 	const dispatch = createEventDispatcher();
-	let name;
 	let status = 0;
-
-	$:console.log(name)
-	$:console.log(status)
 	export let headings
 
 	const onCancel = () => {
-		name = '';
 		status = -1;
+		console.log(status)
 	}
 
 	const onOkay = (text) => {
-		name = text;
 		status = 1;
+		console.log(status)
 	}
 
   const showDialog = () => {
-		console.log(headings)
 		open(
 			Dialog,
 			{
