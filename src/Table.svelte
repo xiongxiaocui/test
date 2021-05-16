@@ -10,8 +10,10 @@
   import RankOperation from './components/operations/RankContent.svelte'
   import HeightOperation from './components/operations/HeightContent.svelte'
   import DeleteMenu from './components/contextMenu/DeleteMenu.svelte'
+  import SingleMenu from './components/contextMenu/SingleMenu.svelte'
 
   import clickOutside from './clickOutside.js'
+import SingleSelect from './UI/SingleSelect.svelte';
   export let data: ScoutField[];
   export let headings: Heading[];
   export let title: string;
@@ -35,8 +37,8 @@
 
 
   function deleteRow(index: number): void {
-    data.splice(index, 1);
-    data = data;
+    filteredData.splice(index, 1);
+    filteredData = filteredData;
   }
 
   function editCell(index: number, property: string): void {
@@ -140,6 +142,11 @@ $:isAllChecked = filteredData && filteredData.filter(item => !item.checked).leng
 
 $:totalCount = filteredData && filteredData.length
 
+$:checkedCount = filteredData && filteredData.filter(item => item.checked).length
+
+
+// alert(checkedCount)
+
 // 选中某行的时候，出现选择对话框，并且悬浮色
 const handleTrEnter = (index) => {
   filteredData[index].isHover = true
@@ -159,17 +166,18 @@ const showEditStatus = (index, property) => {
   editIndex = index;
   activePropery = property;
 }
-
+// todo 增加点击其他地方 还原编辑状态
 const resetEditStatus = (index, property) => {
   console.log("reset")
   activePropery = null
   editIndex = null
 }
 
-$: showDeleteIcon = isAllSelected || isAllChecked
+$: showDeleteIcon = isAllSelected || isAllChecked || filteredData && checkedCount > 1
+$: showSingleComp = filteredData && checkedCount === 1
 // 删除所有数据
 const handleDeleteAll = () => {
-  filteredData = []
+  filteredData = filteredData && filteredData.filter(item => !item.checked)
 }
 </script>
 
@@ -270,8 +278,10 @@ const handleDeleteAll = () => {
   </table>
 </section>
 {#if showDeleteIcon }
-  <DeleteMenu totalCount={totalCount} on:deleteAll={handleDeleteAll}></DeleteMenu>
-   <!-- content here -->
+  <DeleteMenu totalCount={checkedCount} on:deleteAll={handleDeleteAll}></DeleteMenu>
+{/if}
+{#if showSingleComp}
+  <SingleMenu></SingleMenu>
 {/if}
 <style>
   .actions button {
