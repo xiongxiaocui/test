@@ -16,19 +16,20 @@
       property: 'growerName',
       getOptions: getGrowers,
       type: 'select',
-      show: true,
+      show: false,
       width: 85
     },
     {title: 'Field', property: 'fieldName', width: 200, type: 'text', show: true},
     {title: 'Acres', property: 'acres', type: 'number' , show: true},
-    {title: '打分', property: 'rate', type: 'rate' , show: true}
+    {title: '打分', property: 'rate', type: 'rate' , show: true},
+    {title: '货币', property: 'currency', type: 'currency' , show: true},
   ];
 
   const data = [
-    {scoutName: 'S1', growerName: 'G1', fieldName: 'F1', acres: 100, rate: 0},
-    {scoutName: 'S1', growerName: 'G2', fieldName: 'F2', acres: 200, rate: 1},
-    {scoutName: 'S2', growerName: 'G3', fieldName: 'F3', acres: 300, rate: 2},
-    {scoutName: 'S2', growerName: 'G4', fieldName: 'F4', acres: 400, rate: 3}
+    {scoutName: 'S1', growerName: 'G1', fieldName: 'F1', acres: 100, rate: 0, currency: 10000},
+    {scoutName: 'S1', growerName: 'G2', fieldName: 'F2', acres: 200, rate: 1, currency: 20000},
+    {scoutName: 'S2', growerName: 'G3', fieldName: 'F3', acres: 300, rate: 2, currency: 30000},
+    {scoutName: 'S2', growerName: 'G4', fieldName: 'F4', acres: 400, rate: 3, currency: 40000}
   ];
 </script>
 

@@ -14,9 +14,12 @@
   import Rate from './components/cellTypes/base/rate.svelte'
   import clickOutside from './clickOutside.js'
   import SingleSelect from './UI/SingleSelect.svelte';
+  import Currency from './components/cellTypes/base/currency.svelte'
+  import {money} from './format-number'
   export let data: ScoutField[];
   export let headings: Heading[];
   export let title: string;
+  let currency = '¥'
 
   let editIndex: number;
   let editProperty: string;
@@ -220,6 +223,11 @@ const beforeRate = rate => {
 const afterRate = rate => {
   console.log(rate);
 };
+
+const handleCurrency = (val,index, property) => {
+  console.log(val)
+  filteredData[index][property] = val
+}
 </script>
 
 <section style="{cssVarStyles}">
@@ -298,6 +306,8 @@ const afterRate = rate => {
                         use:selectAll
                         on:change={e => saveChange(e, index, heading.property)}
                         value={filteredData[index][heading.property]} />
+                    {:else if heading.type === 'currency'}
+                      <Currency onChange={(val) => handleCurrency(val, index, heading.property)} initialValue={filteredData[index][heading.property]}></Currency>
                     {/if}
                     {:else if heading.type === 'rate'}
                       <Rate {beforeRate}
@@ -305,7 +315,13 @@ const afterRate = rate => {
                         value={obj[heading.property]}
                         length={5}
                         showCount={false} />
-                  {:else}<span>{obj[heading.property]}</span>{/if}
+                  {:else}
+                      {#if heading.property === 'currency'}
+                         {currency}{money(obj[heading.property])}
+                         {:else}
+                          <span>{obj[heading.property]}</span>
+                      {/if}
+                  {/if}
                 </td>
               {/if}
             {/each}
