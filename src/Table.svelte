@@ -17,7 +17,7 @@
   import Currency from './components/cellTypes/base/currency.svelte'
   import Percent from './components/cellTypes/base/percent.svelte'
   import { money, percent } from './format-number'
-  import {DatePicker} from 'attractions'
+  import {DatePicker, FileDropzone} from 'attractions'
   export let data: ScoutField[];
   export let headings: Heading[];
   export let title: string;
@@ -330,6 +330,10 @@ const handleTimeChange = (val, index, property) => {
                     {:else if heading.type === 'date'}
                       <!-- <div>{obj[heading.property]}</div> -->
                       <DatePicker value={new Date(obj[heading.property])} on:change={(val) => handleTimeChange(val,index, heading.property)} format="%m/%d/%Y"></DatePicker>
+                    {:else if heading.type === 'fileDropZone'}
+                      <!-- <div>{obj[heading.property]}</div> -->
+                      <FileDropzone></FileDropzone>
+                      <!-- <DatePicker value={new Date(obj[heading.property])} on:change={(val) => handleTimeChange(val,index, heading.property)} format="%m/%d/%Y"></DatePicker> -->
                   {:else}
                       {#if heading.property === 'currency'}
                         {currency}{money(obj[heading.property])}
