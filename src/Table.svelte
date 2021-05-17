@@ -11,6 +11,7 @@
   import RankOperation from './components/operations/RankContent.svelte'
   import HeightOperation from './components/operations/HeightContent.svelte'
   import DeleteMenu from './components/contextMenu/DeleteMenu.svelte'
+  import Rate from './components/cellTypes/base/rate.svelte'
   import clickOutside from './clickOutside.js'
   import SingleSelect from './UI/SingleSelect.svelte'; 
   export let data: ScoutField[];
@@ -205,13 +206,20 @@ const handleDeleteAll = () => {
 const fillRow = data => {
   // console.log(data)
   const {detail} = data
-  const values = Object.values(detail)
+  // const values = Object.values(detail)
   const keys = Object.keys(detail)
   const len = filteredData && filteredData.length - 1
   keys.forEach(item => {
     filteredData[len][item] = detail[item]
   })
 }
+
+const beforeRate = rate => {
+  console.log(rate);
+};
+const afterRate = rate => {
+  console.log(rate);
+};
 </script>
 
 <section style="{cssVarStyles}">
@@ -281,7 +289,13 @@ const fillRow = data => {
                           <option value={option}>{option}</option>
                         {/each}
                       </select>
-                    {:else}
+                    {:else if heading.type === 'rate'}
+                    <Rate {beforeRate}
+                      {afterRate}
+                      length={5}
+                      ratedesc={['Very bad', 'bad', 'Normal', 'Good', 'Very good']}
+                      showCount={true} />
+                    {:else if heading.type === 'number' || heading.type === 'text'}
                       <input
                         on:blur={handleBlur}
                         on:keydown={handleKey}
