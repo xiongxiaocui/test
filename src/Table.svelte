@@ -15,7 +15,8 @@
   import clickOutside from './clickOutside.js'
   import SingleSelect from './UI/SingleSelect.svelte';
   import Currency from './components/cellTypes/base/currency.svelte'
-  import {money} from './format-number'
+  import Percent from './components/cellTypes/base/percent.svelte'
+  import { money, percent } from './format-number'
   export let data: ScoutField[];
   export let headings: Heading[];
   export let title: string;
@@ -308,6 +309,8 @@ const handleCurrency = (val,index, property) => {
                         value={filteredData[index][heading.property]} />
                     {:else if heading.type === 'currency'}
                       <Currency onChange={(val) => handleCurrency(val, index, heading.property)} initialValue={filteredData[index][heading.property]}></Currency>
+                    {:else if heading.type === 'percent'}
+                      <Percent onChange={(val) => handleCurrency(val, index, heading.property)} initialValue={filteredData[index][heading.property]}></Percent>
                     {/if}
                     {:else if heading.type === 'rate'}
                       <Rate {beforeRate}
@@ -317,8 +320,10 @@ const handleCurrency = (val,index, property) => {
                         showCount={false} />
                   {:else}
                       {#if heading.property === 'currency'}
-                         {currency}{money(obj[heading.property])}
-                         {:else}
+                        {currency}{money(obj[heading.property])}
+                        {:else if heading.type === 'percent'}
+                          {percent(obj[heading.property])}
+                        {:else}
                           <span>{obj[heading.property]}</span>
                       {/if}
                   {/if}
