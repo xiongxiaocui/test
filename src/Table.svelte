@@ -17,6 +17,7 @@
   import Currency from './components/cellTypes/base/currency.svelte'
   import Percent from './components/cellTypes/base/percent.svelte'
   import { money, percent } from './format-number'
+  import {DatePicker} from 'attractions'
   export let data: ScoutField[];
   export let headings: Heading[];
   export let title: string;
@@ -226,8 +227,16 @@ const afterRate = rate => {
 };
 
 const handleCurrency = (val,index, property) => {
-  console.log(val)
   filteredData[index][property] = val
+}
+
+const handleTimeChange = (val, index, property) => {
+  console.log(11)
+  const {detail} = val
+  console.log(val)
+  console.log(index)
+  console.log(property)
+  filteredData[index][property] = detail && detail.value
 }
 </script>
 
@@ -318,6 +327,9 @@ const handleCurrency = (val,index, property) => {
                         value={obj[heading.property]}
                         length={5}
                         showCount={false} />
+                    {:else if heading.type === 'date'}
+                      <!-- <div>{obj[heading.property]}</div> -->
+                      <DatePicker value={new Date(obj[heading.property])} on:change={(val) => handleTimeChange(val,index, heading.property)} format="%m/%d/%Y"></DatePicker>
                   {:else}
                       {#if heading.property === 'currency'}
                         {currency}{money(obj[heading.property])}

@@ -1,4 +1,5 @@
 import svelte from 'rollup-plugin-svelte';
+const svelteConfig = require('./svelte.config.js');
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import livereload from 'rollup-plugin-livereload';
@@ -44,6 +45,7 @@ export default {
   },
   plugins: [
     svelte({
+      ...svelteConfig,
       // enable run-time checks when not in production
       dev: !production,
       // we'll extract any component CSS out into

@@ -24,13 +24,14 @@
     {title: '打分', property: 'rate', type: 'rate' , show: true},
     {title: '货币', property: 'currency', type: 'currency' , show: true},
     {title: '百分比', property: 'percent', type: 'percent' , show: true},
+    {title: '日期', property: 'date', type: 'date' , show: true},
   ];
 
   const data = [
-    {scoutName: 'S1', growerName: 'G1', fieldName: 'F1', acres: 100, rate: 0, currency: 10000, percent: 0.01},
-    {scoutName: 'S1', growerName: 'G2', fieldName: 'F2', acres: 200, rate: 1, currency: 20000, percent: 0.02},
-    {scoutName: 'S2', growerName: 'G3', fieldName: 'F3', acres: 300, rate: 2, currency: 30000, percent: 0.03},
-    {scoutName: 'S2', growerName: 'G4', fieldName: 'F4', acres: 400, rate: 3, currency: 40000, percent: 0.04}
+    {scoutName: 'S1', growerName: 'G1', fieldName: 'F1', acres: 100, rate: 0, currency: 10000, percent: 0.01, date: 1621239215963},
+    {scoutName: 'S1', growerName: 'G2', fieldName: 'F2', acres: 200, rate: 1, currency: 20000, percent: 0.02, date: 1577836800000},
+    {scoutName: 'S2', growerName: 'G3', fieldName: 'F3', acres: 300, rate: 2, currency: 30000, percent: 0.03, date: 1621239115963},
+    {scoutName: 'S2', growerName: 'G4', fieldName: 'F4', acres: 400, rate: 3, currency: 40000, percent: 0.04, date: 1621238215963}
   ];
 </script>
 
