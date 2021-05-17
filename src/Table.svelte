@@ -13,7 +13,7 @@
   import DeleteMenu from './components/contextMenu/DeleteMenu.svelte'
   import Rate from './components/cellTypes/base/rate.svelte'
   import clickOutside from './clickOutside.js'
-  import SingleSelect from './UI/SingleSelect.svelte'; 
+  import SingleSelect from './UI/SingleSelect.svelte';
   export let data: ScoutField[];
   export let headings: Heading[];
   export let title: string;
@@ -279,7 +279,7 @@ const afterRate = rate => {
             {#each headings as heading}
               {#if heading.show}
                 <td class={editIndex === index && (editProperty === heading.property|| activePropery === heading.property) ? "active": ""} on:dblclick={() => editCell(index, heading.property)} on:click="{() => showEditStatus(index, heading.property)}">
-                  {#if editIndex === index && editProperty === heading.property}
+                  {#if editIndex === index && editProperty === heading.property && heading.type !== 'rate'}
                     {#if heading.getOptions}
                       <select
                         on:blur={e => saveChange(e, index, heading.property)}
@@ -289,12 +289,6 @@ const afterRate = rate => {
                           <option value={option}>{option}</option>
                         {/each}
                       </select>
-                    {:else if heading.type === 'rate'}
-                    <Rate {beforeRate}
-                      {afterRate}
-                      length={5}
-                      ratedesc={['Very bad', 'bad', 'Normal', 'Good', 'Very good']}
-                      showCount={true} />
                     {:else if heading.type === 'number' || heading.type === 'text'}
                       <input
                         on:blur={handleBlur}
@@ -305,6 +299,12 @@ const afterRate = rate => {
                         on:change={e => saveChange(e, index, heading.property)}
                         value={filteredData[index][heading.property]} />
                     {/if}
+                    {:else if heading.type === 'rate'}
+                      <Rate {beforeRate}
+                        {afterRate}
+                        value={obj[heading.property]}
+                        length={5}
+                        showCount={false} />
                   {:else}<span>{obj[heading.property]}</span>{/if}
                 </td>
               {/if}
