@@ -17,7 +17,7 @@
   import Currency from './components/cellTypes/base/currency.svelte'
   import Percent from './components/cellTypes/base/percent.svelte'
   import { money, percent } from './format-number'
-  import {DatePicker, FileDropzone} from 'attractions'
+  import {DatePicker, FileDropzone, CheckboxGroup} from 'attractions'
   export let data: ScoutField[];
   export let headings: Heading[];
   export let title: string;
@@ -28,9 +28,15 @@
   let activePropery: string
   let table: HTMLTableElement;
   // let headerPopref: HTMLDivElement
-  let filteredData
+  let filteredData: Array<Object>
 
-  let filterSearchStr
+  let filterSearchStr: String
+
+  let showJumpIcon: Boolean
+
+  const colors = [
+    { value: '#ff0000' },
+  ];
 
   let styles = {
 		'row-height': '42px'
@@ -83,7 +89,7 @@
 
   // 插入行
   function addRow() {
-    const len = filteredData.length;
+    const len = filteredData && filteredData.length;
     insertRowAfter(len - 1);
     // console.log('after')
   }
@@ -238,6 +244,14 @@ const handleTimeChange = (val, index, property) => {
   console.log(property)
   filteredData[index][property] = detail && detail.value
 }
+
+const getHref = href => {
+  console.log(href)
+  if (href && href.startsWith('http')) {
+    return href
+  }
+  return 'https://' + href
+}
 </script>
 
 <section style="{cssVarStyles}">
@@ -307,7 +321,7 @@ const handleTimeChange = (val, index, property) => {
                           <option value={option}>{option}</option>
                         {/each}
                       </select>
-                    {:else if heading.type === 'number' || heading.type === 'text'}
+                    {:else if heading.type === 'number' || heading.type === 'text'|| heading.type === 'website'}
                       <input
                         on:blur={handleBlur}
                         on:keydown={handleKey}
@@ -333,12 +347,24 @@ const handleTimeChange = (val, index, property) => {
                     {:else if heading.type === 'fileDropZone'}
                       <!-- <div>{obj[heading.property]}</div> -->
                       <FileDropzone></FileDropzone>
+                    {:else if heading.type === 'checkbox'}
+                      <CheckboxGroup
+                        color
+                        round
+                        value = {obj[heading.property]}
+                        items={colors}
+                        name={obj[heading.property]}
+                        checked = {obj[heading.property]}
+                        class="colored"
+                      />
                       <!-- <DatePicker value={new Date(obj[heading.property])} on:change={(val) => handleTimeChange(val,index, heading.property)} format="%m/%d/%Y"></DatePicker> -->
                   {:else}
                       {#if heading.property === 'currency'}
                         {currency}{money(obj[heading.property])}
                         {:else if heading.type === 'percent'}
                           {percent(obj[heading.property])}
+                        {:else if heading.type === 'website'}
+                          <a target='_blank' href={getHref(obj[heading.property])}>{obj[heading.property]}</a>
                         {:else}
                           <span>{obj[heading.property]}</span>
                       {/if}

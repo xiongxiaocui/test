@@ -26,13 +26,15 @@
     {title: '百分比', property: 'percent', type: 'percent' , show: true},
     {title: '日期', property: 'date', type: 'date' , show: true},
     {title: '附件', property: 'file', type: 'fileDropZone' , show: true},
+    {title: '网址', property: 'website', type: 'website' , show: true},
+    {title: '勾选', property: 'checkbox', type: 'checkbox' , show: true},
   ];
 
   const data = [
-    {scoutName: 'S1', growerName: 'G1', fieldName: 'F1', acres: 100, rate: 0, currency: 10000, percent: 0.01, date: 1621239215963, file: null},
-    {scoutName: 'S1', growerName: 'G2', fieldName: 'F2', acres: 200, rate: 1, currency: 20000, percent: 0.02, date: 1577836800000, file: null},
-    {scoutName: 'S2', growerName: 'G3', fieldName: 'F3', acres: 300, rate: 2, currency: 30000, percent: 0.03, date: 1621239115963, file: null},
-    {scoutName: 'S2', growerName: 'G4', fieldName: 'F4', acres: 400, rate: 3, currency: 40000, percent: 0.04, date: 1621238215963, file: null}
+    {scoutName: 'S1', growerName: 'G1', fieldName: 'F1', acres: 100, rate: 0, currency: 10000, percent: 0.01, date: 1621239215963, file: null, checkbox: 0, website: 'www.baidu.com'},
+    {scoutName: 'S1', growerName: 'G2', fieldName: 'F2', acres: 200, rate: 1, currency: 20000, percent: 0.02, date: 1577836800000, file: null, checkbox: 1, website: 'www.google.com'},
+    {scoutName: 'S2', growerName: 'G3', fieldName: 'F3', acres: 300, rate: 2, currency: 30000, percent: 0.03, date: 1621239115963, file: null, checkbox: 1, website: 'www.idgcapital.com'},
+    {scoutName: 'S2', growerName: 'G4', fieldName: 'F4', acres: 400, rate: 3, currency: 40000, percent: 0.04, date: 1621238215963, file: null, checkbox: 0, website: 'www.baidu.com'}
   ];
 </script>
 
